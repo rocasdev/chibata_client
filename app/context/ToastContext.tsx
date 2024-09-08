@@ -4,7 +4,11 @@ import { Toaster } from "react-hot-toast";
 const ToasterContext = () => {
   return (
     <div>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="bottom-right" reverseOrder={false} toastOptions={{
+        style: {
+          right: "5px"
+        }
+      }}/>
     </div>
   );
 };

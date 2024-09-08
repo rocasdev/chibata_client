@@ -4,44 +4,44 @@ const featuresData: Feature[] = [
   {
     id: 1,
     icon: "/images/icon/icon-01.svg",
-    title: "Crafted for SaaS",
+    title: "Registro y Gestión de Eventos",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.",
+      "Permite a las organizaciones crear, gestionar y promocionar eventos ecológicos locales, como jornadas de limpieza, reforestación y talleres comunitarios",
   },
   {
     id: 2,
     icon: "/images/icon/icon-02.svg",
-    title: "High-quality Design",
+    title: "Inscripción de Voluntarios",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.",
+      "Facilita la inscripción de voluntarios en eventos ecológicos, permitiéndoles ver detalles de los eventos, registrarse y recibir confirmaciones y recordatorios.",
   },
   {
     id: 3,
     icon: "/images/icon/icon-03.svg",
-    title: "Next.js 13 + TypeScript",
+    title: "Perfiles de Organizaciones",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.",
+      "Proporciona a las organizaciones un perfil en el que pueden destacar su misión, proyectos en curso, eventos futuros y logros en sostenibilidad.",
   },
   {
     id: 4,
     icon: "/images/icon/icon-04.svg",
-    title: "Sanity Blog and Docs",
+    title: "Calendario de Ecoacciones",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.",
+      "Ofrece un calendario interactivo donde los usuarios pueden ver todas las ecoacciones locales programadas y filtrar por tipo, fecha y ubicación.",
   },
   {
     id: 5,
     icon: "/images/icon/icon-05.svg",
-    title: "DB, Auth and Stripe",
+    title: "Seguimiento de Participación",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.",
+      "Permite a los usuarios y organizaciones rastrear la participación en eventos, con herramientas para evaluar el impacto y generar informes de actividades realizadas.",
   },
   {
     id: 6,
     icon: "/images/icon/icon-06.svg",
-    title: "Regular Free Updates",
+    title: "Notificaciones y Recordatorios",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In convallis tortor.",
+      "Envía notificaciones y recordatorios automáticos a los usuarios sobre eventos a los que están inscritos, actualizaciones importantes y nuevas oportunidades de participación.",
   },
 ];
 

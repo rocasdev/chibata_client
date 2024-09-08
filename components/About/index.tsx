@@ -7,7 +7,7 @@ const About = () => {
   return (
     <>
       {/* <!-- ===== About Start ===== --> */}
-      <section className="overflow-hidden pb-20 lg:pb-25 xl:pb-30">
+      <section className="overflow-hidden pb-20 lg:pb-25 xl:pb-30" id="about">
         <div className="mx-auto max-w-c-1235 px-4 md:px-8 xl:px-0">
           <div className="flex items-center gap-8 lg:gap-32.5">
             <motion.div
@@ -16,7 +16,6 @@ const About = () => {
                   opacity: 0,
                   x: -20,
                 },
-
                 visible: {
                   opacity: 1,
                   x: 0,
@@ -29,13 +28,13 @@ const About = () => {
               className="animate_left relative mx-auto hidden aspect-[588/526.5] md:block md:w-1/2"
             >
               <Image
-                src="/images/about/about-light-01.png"
+                src="/images/about/about-light-01.svg"
                 alt="About"
                 className="dark:hidden"
                 fill
               />
               <Image
-                src="/images/about/about-dark-01.png"
+                src="/images/about/about-dark-01.svg"
                 alt="About"
                 className="hidden dark:block"
                 fill
@@ -47,7 +46,6 @@ const About = () => {
                   opacity: 0,
                   x: 20,
                 },
-
                 visible: {
                   opacity: 1,
                   x: 0,
@@ -61,19 +59,18 @@ const About = () => {
             >
               <span className="font-medium uppercase text-black dark:text-white">
                 <span className="mb-4 mr-4 inline-flex rounded-full bg-meta px-4.5 py-1 text-metatitle uppercase text-white ">
-                  New
+                  Nueva
                 </span>{" "}
-                SaaS Boilerplate for Next.js
+                Plataforma para Ecoacciones Locales
               </span>
               <h2 className="relative mb-6 text-3xl font-bold text-black dark:text-white xl:text-hero">
-                A Complete Solution for
+                Una Solución Completa para {" "}
                 <span className="relative inline-block before:absolute before:bottom-2.5 before:left-0 before:-z-1 before:h-3 before:w-full before:bg-titlebg dark:before:bg-titlebgdark">
-                  SaaS Startup
+                Ecoacciones Locales
                 </span>
               </h2>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                ultricies lacus non fermentum ultrices. Fusce consectetur le.
+                Chibatá facilita la organización y participación en eventos ecológicos locales, promoviendo la sostenibilidad y el compromiso comunitario.
               </p>
 
               <div className="mt-7.5 flex items-center gap-5">
@@ -84,9 +81,9 @@ const About = () => {
                 </div>
                 <div className="w-3/4">
                   <h3 className="mb-0.5 text-metatitle2 text-black dark:text-white">
-                    React 18, Next.js 13 and TypeScript
+                    Gestión de Eventos Ecológicos
                   </h3>
-                  <p>Ut ultricies lacus non fermentum ultrices.</p>
+                  <p>Organiza y promociona eventos ecológicos para la comunidad local.</p>
                 </div>
               </div>
               <div className="mt-7.5 flex items-center gap-5">
@@ -97,9 +94,9 @@ const About = () => {
                 </div>
                 <div className="w-3/4">
                   <h3 className="mb-0.5 text-metatitle2 text-black dark:text-white">
-                    Fully Customizable
+                    Inscripción de Voluntarios
                   </h3>
-                  <p>consectetur adipiscing elit fermentum ultricies.</p>
+                  <p>Permite a los usuarios registrarse en eventos ecológicos y recibir actualizaciones.</p>
                 </div>
               </div>
             </motion.div>
@@ -118,7 +115,6 @@ const About = () => {
                   opacity: 0,
                   x: -20,
                 },
-
                 visible: {
                   opacity: 1,
                   x: 0,
@@ -131,17 +127,16 @@ const About = () => {
               className="animate_left md:w-1/2"
             >
               <h4 className="font-medium uppercase text-black dark:text-white">
-                Launch Your SaaS Fast
+                Impulsa Tus Ecoacciones
               </h4>
               <h2 className="relative mb-6 text-3xl font-bold text-black dark:text-white xl:text-hero">
-                Packed with All Essential {"   "}
+                Todo lo Esencial para
                 <span className="relative inline-block before:absolute before:bottom-2.5 before:left-0 before:-z-1 before:h-3 before:w-full before:bg-titlebg2 dark:before:bg-titlebgdark">
-                  Integrations
+                  Ecoacciones Locales
                 </span>
               </h2>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                ultricies lacus non fermentum ultrices. Fusce consectetur le.
+                Chibatá ofrece herramientas completas para organizar y participar en ecoacciones, fomentando una mayor implicación y efectividad en las iniciativas ecológicas.
               </p>
               <div>
                 <a
@@ -149,7 +144,7 @@ const About = () => {
                   className="group mt-7.5 inline-flex items-center gap-2.5 text-black hover:text-primary dark:text-white dark:hover:text-primary"
                 >
                   <span className="duration-300 group-hover:pr-2">
-                    Know More
+                    Más Información
                   </span>
                   <svg
                     width="14"
@@ -168,7 +163,6 @@ const About = () => {
                   opacity: 0,
                   x: 20,
                 },
-
                 visible: {
                   opacity: 1,
                   x: 0,

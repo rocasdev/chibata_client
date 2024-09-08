@@ -4,10 +4,6 @@ import Image from "next/image";
 import React from "react";
 
 const Contact = () => {
-  /**
-   * Source: https://www.joshwcomeau.com/react/the-perils-of-rehydration/
-   * Reason: To fix rehydration error
-   */
   const [hasMounted, setHasMounted] = React.useState(false);
   React.useEffect(() => {
     setHasMounted(true);
@@ -18,19 +14,19 @@ const Contact = () => {
 
   return (
     <>
-      {/* <!-- ===== Contact Start ===== --> */}
-      <section id="support" className="px-4 md:px-8 2xl:px-0">
+      {/* <!-- ===== Contacto Start ===== --> */}
+      <section id="contact" className="px-4 md:px-8 2xl:px-0 pb-5">
         <div className="relative mx-auto max-w-c-1390 px-7.5 pt-10 lg:px-15 lg:pt-15 xl:px-20 xl:pt-20">
           <div className="absolute left-0 top-0 -z-1 h-2/3 w-full rounded-lg bg-gradient-to-t from-transparent to-[#dee7ff47] dark:bg-gradient-to-t dark:to-[#252A42]"></div>
           <div className="absolute bottom-[-255px] left-0 -z-1 h-full w-full">
             <Image
-              src="./images/shape/shape-dotted-light.svg"
+              src="/images/shape/shape-dotted-light.svg"
               alt="Dotted"
               className="dark:hidden"
               fill
             />
             <Image
-              src="./images/shape/shape-dotted-dark.svg"
+              src="/images/shape/shape-dotted-dark.svg"
               alt="Dotted"
               className="hidden dark:block"
               fill
@@ -57,7 +53,7 @@ const Contact = () => {
               className="animate_top w-full rounded-lg bg-white p-7.5 shadow-solid-8 dark:border dark:border-strokedark dark:bg-black md:w-3/5 lg:w-3/4 xl:p-15"
             >
               <h2 className="mb-15 text-3xl font-semibold text-black dark:text-white xl:text-sectiontitle2">
-                Send a message
+                Envíanos un mensaje
               </h2>
 
               <form
@@ -67,13 +63,13 @@ const Contact = () => {
                 <div className="mb-7.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
                   <input
                     type="text"
-                    placeholder="Full name"
+                    placeholder="Nombre completo"
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
 
                   <input
                     type="email"
-                    placeholder="Email address"
+                    placeholder="Dirección de correo electrónico"
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
                 </div>
@@ -81,20 +77,20 @@ const Contact = () => {
                 <div className="mb-12.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
                   <input
                     type="text"
-                    placeholder="Subject"
+                    placeholder="Asunto"
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
 
                   <input
                     type="text"
-                    placeholder="Phone number"
+                    placeholder="Número de teléfono"
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
                 </div>
 
                 <div className="mb-11.5 flex">
                   <textarea
-                    placeholder="Message"
+                    placeholder="Mensaje"
                     rows={4}
                     className="w-full border-b border-stroke bg-transparent focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
                   ></textarea>
@@ -107,7 +103,7 @@ const Contact = () => {
                       type="checkbox"
                       className="peer sr-only"
                     />
-                    <span className="border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700 group mt-2 flex h-5 min-w-[20px] items-center justify-center rounded peer-checked:bg-primary">
+                    <span className="border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700 group mt-2 flex h-5 min-w-[20px] items-center justify-center rounded peer-checked:bg-green-700">
                       <svg
                         className="opacity-0 peer-checked:group-[]:opacity-100"
                         width="10"
@@ -128,16 +124,16 @@ const Contact = () => {
                       htmlFor="default-checkbox"
                       className="flex max-w-[425px] cursor-pointer select-none pl-5"
                     >
-                      By clicking Checkbox, you agree to use our “Form” terms
-                      And consent cookie usage in browser.
+                      Al marcar la casilla, aceptas nuestros términos de uso
+                      del “Formulario” y el uso de cookies en el navegador.
                     </label>
                   </div>
 
                   <button
-                    aria-label="send message"
+                    aria-label="enviar mensaje"
                     className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark"
                   >
-                    Send Message
+                    Enviar Mensaje
                     <svg
                       className="fill-white"
                       width="14"
@@ -175,36 +171,61 @@ const Contact = () => {
               className="animate_top w-full md:w-2/5 md:p-7.5 lg:w-[26%] xl:pt-15"
             >
               <h2 className="mb-12.5 text-3xl font-semibold text-black dark:text-white xl:text-sectiontitle2">
-                Find us
+                Datos de Contacto
               </h2>
 
-              <div className="5 mb-7">
-                <h3 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">
-                  Our Loaction
-                </h3>
-                <p>290 Maryam Springs 260, Courbevoie, Paris, France</p>
-              </div>
-              <div className="5 mb-7">
-                <h3 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">
-                  Email Address
-                </h3>
-                <p>
-                  <a href="#">yourmail@domainname.com</a>
-                </p>
-              </div>
-              <div>
-                <h4 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">
-                  Phone Number
-                </h4>
-                <p>
-                  <a href="#">+009 42334 6343 843</a>
-                </p>
-              </div>
+              <ul className="space-y-6">
+                <li className="flex items-center space-x-4">
+                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-[#e7f2f6] dark:bg-[#1f2a34]">
+                    <svg
+                      className="fill-green-700"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M13.6464 2.64645C14.0367 3.03672 14.0367 3.65942 13.6464 4.04969L8.78671 8.9094L8.78671 8.9094L6.62132 11.0748L5.34371 12.3524C5.15476 12.5414 4.88255 12.6428 4.62642 12.6428C4.37026 12.6428 4.09806 12.5414 3.9091 12.3524L1.16017 9.60349C0.958224 9.40158 0.95753 9.09865 1.1565 8.89969C1.35553 8.70186 1.66027 8.69565 1.86136 8.89517L4.43794 11.4699L6.58337 9.32442L6.58337 9.32442L10.4431 5.46472L10.4431 5.46472L13.6464 2.64645Z"
+                        fill=""
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-base font-medium text-bodydark dark:text-white">
+                    322 352 1165
+                  </p>
+                </li>
+
+                <li className="flex items-center space-x-4">
+                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-[#e7f2f6] dark:bg-[#1f2a34]">
+                    <svg
+                      className="fill-green-700"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M2.16667 1.99999H13.8333C14.2324 1.99999 14.5833 2.35097 14.5833 2.74999V13.25C14.5833 13.649 14.2324 13.9999 13.8333 13.9999H2.16667C1.76763 13.9999 1.41667 13.649 1.41667 13.25V2.74999C1.41667 2.35097 1.76763 1.99999 2.16667 1.99999ZM2.66667 3.66666L8 7.91666L13.3333 3.66666H2.66667ZM2.66667 12.3333H13.3333V4.66666L8 8.91666L2.66667 4.66666V12.3333Z"
+                        fill=""
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-base font-medium text-bodydark dark:text-white">
+                  info@chibata.com
+                  </p>
+                </li>
+              </ul>
             </motion.div>
           </div>
         </div>
       </section>
-      {/* <!-- ===== Contact End ===== --> */}
+      {/* <!-- ===== Contacto End ===== --> */}
     </>
   );
 };

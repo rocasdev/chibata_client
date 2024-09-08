@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
@@ -29,9 +29,9 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed left-0 top-0 z-99999 w-full py-7 ${
+      className={`fixed left-0 top-0 z-[99999] w-full py-7 transition-all duration-100 ${
         stickyMenu
-          ? "bg-white !py-4 shadow transition duration-100 dark:bg-black"
+          ? "bg-white !py-4 shadow-md dark:bg-black"
           : ""
       }`}
     >
@@ -39,18 +39,12 @@ const Header = () => {
         <div className="flex w-full items-center justify-between xl:w-1/4">
           <a href="/">
             <Image
-              src="/images/logo/logo-dark.svg"
+              src="/images/logo/logo-icon.svg"
               alt="logo"
-              width={119.03}
-              height={30}
-              className="hidden w-full dark:block"
-            />
-            <Image
-              src="/images/logo/logo-light.svg"
-              alt="logo"
-              width={119.03}
-              height={30}
-              className="w-full dark:hidden"
+              width={80}
+              height={80}
+              className="w-[60px]"
+              priority={true}
             />
           </a>
 
@@ -110,12 +104,12 @@ const Header = () => {
                     <>
                       <button
                         onClick={() => setDropdownToggler(!dropdownToggler)}
-                        className="flex cursor-pointer items-center justify-between gap-3 hover:text-primary"
+                        className="flex cursor-pointer items-center justify-between gap-3 hover:text-green-700"
                       >
                         {menuItem.title}
                         <span>
                           <svg
-                            className="h-3 w-3 cursor-pointer fill-waterloo group-hover:fill-primary"
+                            className="h-3 w-3 cursor-pointer fill-waterloo group-hover:fill-green-700"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
                           >
@@ -128,7 +122,7 @@ const Header = () => {
                         className={`dropdown ${dropdownToggler ? "flex" : ""}`}
                       >
                         {menuItem.submenu.map((item, key) => (
-                          <li key={key} className="hover:text-primary">
+                          <li key={key} className="hover:text-green-700">
                             <Link href={item.path || "#"}>{item.title}</Link>
                           </li>
                         ))}
@@ -139,8 +133,8 @@ const Header = () => {
                       href={`${menuItem.path}`}
                       className={
                         pathUrl === menuItem.path
-                          ? "text-primary hover:text-primary"
-                          : "hover:text-primary"
+                          ? "text-green-700 hover:text-green-700"
+                          : "hover:text-green-700"
                       }
                     >
                       {menuItem.title}
@@ -155,17 +149,17 @@ const Header = () => {
             <ThemeToggler />
 
             <Link
-              href="https://github.com/NextJSTemplates/solid-nextjs"
-              className="text-regular font-medium text-waterloo hover:text-primary"
+              href="/auth/signin"
+              className="text-regular font-medium text-waterloo hover:text-green-700"
             >
-              GitHub Repo 🌟
+              Inicia Sesión
             </Link>
 
             <Link
-              href="https://nextjstemplates.com/templates/solid"
-              className="flex items-center justify-center rounded-full bg-primary px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-primaryho"
+              href="/auth/signup"
+              className="flex items-center justify-center rounded-full bg-green-700 px-7.5 py-2.5 text-regular text-white duration-300 ease-in-out hover:bg-green-700ho"
             >
-              Get Pro 🔥
+              Regisrtrate
             </Link>
           </div>
         </div>

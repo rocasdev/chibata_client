@@ -13,11 +13,9 @@ const Feature = () => {
           {/* <!-- Section Title Start --> */}
           <SectionHeader
             headerInfo={{
-              title: "SOLID FEATURES",
-              subtitle: "Core Features of Solid",
-              description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
-            convallis tortor eros. Donec vitae tortor lacus. Phasellus aliquam
-            ante in maximus.`,
+              title: "Servicios",
+              subtitle: "Conoce lo que hacemos",
+              description: `Conoce más sobre lo que Chibatá tiene para ofrecerte, más que una sencilla plataforma más, nos unimos a diversas organizaciones para apoyar la participación de la comunidad en las ecoacciones de Bogotá`,
             }}
           />
           {/* <!-- Section Title End --> */}
