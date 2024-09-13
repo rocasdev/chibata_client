@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -6,7 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -26,22 +26,23 @@ const Signin = () => {
 
   const signIn = async (values: { email: string; password: string }) => {
     try {
-      const response = await axios.post("http://localhost:4000/api/auth/login/", values, { withCredentials: true });
-      const roleName = response.data.user.role_name;
+      const response = await axios.post(
+        "http://localhost:1337/api/auth/local",
+        {
+          identifier: values.email,
+          password: values.password,
+        }
+      );
 
-      switch (roleName) {
-        case 'Administrador':
-          router.push('/admin');
-          break;
-        case 'Voluntario':
-          router.push('/volunteer');
-          break;
-        case 'Organizador':
-          router.push('/organization');
-          break;
-        default:
-          router.push('/');
-      }
+      console.log(response.data)
+
+      const { jwt, user } = response.data;
+
+      localStorage.setItem("jwt", jwt);
+      localStorage.setItem("user", JSON.stringify(user));
+      let rolePath = user.role_path;
+
+      router.push(rolePath);
     } catch (error) {
       console.error("Error al iniciar sesión:", error); // Imprime el error para más detalles
       throw error; // Re-lanza el error para que sea manejado por toast.promise
@@ -54,13 +55,13 @@ const Signin = () => {
       {
         loading: "Iniciando sesión",
         success: "Sesión iniciada",
-        error: "Verifica tus datos"
+        error: "Verifica tus datos",
       },
       {
         success: {
-          duration: 4000
-        }
-      }
+          duration: 4000,
+        },
+      },
     );
   };
 
@@ -119,8 +120,8 @@ const Signin = () => {
           >
             <Form>
               <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
-                <div className="w-full flex flex-col lg:w-1/2">
-                  <Label htmlFor="">Correo</Label>
+                <div className="flex w-full flex-col lg:w-1/2">
+                  <Label htmlFor="email">Correo</Label>
                   <Field
                     as={Input}
                     id="email"
@@ -136,7 +137,7 @@ const Signin = () => {
                   />
                 </div>
 
-                <div className="w-full flex flex-col lg:w-1/2">
+                <div className="flex w-full flex-col lg:w-1/2">
                   <Label htmlFor="password">Contraseña</Label>
                   <Field
                     as={Input}
@@ -155,14 +156,14 @@ const Signin = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-10 md:justify-between xl:gap-15">
-                <div className="flex flex-wrap gap-4 md:gap-10 items-center pb-3 justify-between w-full">
+                <div className="flex w-full flex-wrap items-center justify-between gap-4 pb-3 md:gap-10">
                   <div className="flex items-center">
                     <input
                       id="default-checkbox"
                       type="checkbox"
                       className="peer sr-only"
                     />
-                    <span className="border-gray-300 bg-gray-100 text-green-700 dark:border-gray-600 dark:bg-gray-700 group mt-1 flex h-5 min-w-[20px] items-center justify-center rounded peer-checked:bg-green-700">
+                    <span className="group mt-1 flex h-5 min-w-[20px] items-center justify-center rounded border-gray-300 bg-gray-100 text-green-700 peer-checked:bg-green-700 dark:border-gray-600 dark:bg-gray-700">
                       <svg
                         className="opacity-0 peer-checked:group-[]:opacity-100"
                         width="10"
@@ -213,9 +214,12 @@ const Signin = () => {
                   </button>
                 </div>
               </div>
-              <p className="text-body-color text-center text-base mt-5 py-5 w-full">
-                ¿Aun no tienes cuenta?{' '}
-                <Link href="/auth/signup" className="text-green-700 hover:underline">
+              <p className="text-body-color mt-5 w-full py-5 text-center text-base">
+                ¿Aun no tienes cuenta?{" "}
+                <Link
+                  href="/auth/signup"
+                  className="text-green-700 hover:underline"
+                >
                   Registrate
                 </Link>
               </p>

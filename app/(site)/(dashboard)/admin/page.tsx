@@ -1,4 +1,6 @@
 import DashboardStats from "@/components/DashboardComponents/DashboardStats";
+import NotificationTable from "@/components/DashboardComponents/Notifications";
+import Welcome from "@/components/DashboardComponents/Welcome"
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,7 +10,9 @@ export const metadata: Metadata = {
 export default function Dashboard() {
   return (
     <div>
-      <DashboardStats/>
+      <Welcome />
+      <DashboardStats />
+      <NotificationTable/>
     </div>
   );
 }

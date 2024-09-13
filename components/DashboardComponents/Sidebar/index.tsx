@@ -2,22 +2,14 @@
 
 import Link from "next/link";
 import { adminSidebarData, volunteerSidebarData, organizationSidebarData } from "./sidebarData";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
 import Image from "next/image";
 import { Bell, Settings, UserCircle } from "lucide-react";
 import { useUser } from "@/app/context/UserContext";
 const Sidebar = () => {
   const user = useUser()
-
   let menu;
-
   if (user?.role_name === "Administrador") {
-    menu = adminSidebarData;
+    menu = adminSidebarData
   } else if (user?.role_name === "Voluntario") {
     menu = volunteerSidebarData
   } else {
@@ -26,7 +18,7 @@ const Sidebar = () => {
 
   return (
     <div className="flex flex-col p-1 w-full h-full bg-neutral-200 dark:bg-gray-900">
-      <Link href={user?.route || "/"} className="flex justify-center items-center p-2 gap-1 mb-5">
+      <Link href={user?.role_path || "#"} className="flex justify-center items-center p-2 gap-1 mb-5">
         <Image
           src={`/images/logo/logo-icon.svg`}
           width={40}

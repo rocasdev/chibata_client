@@ -21,8 +21,11 @@ export default function DashboardLayout({
           <Sidebar />
         </div>
         {/* Content */}
-        <div className="flex w-full lg-[82%]">
-          <Topbar/>
+        <div className="flex flex-col w-full lg-[82%]">
+          <Topbar />
+          <div className="content w-full h-[calc(100vh-60px)] overflow-x-hidden overflow-y-scroll p-4">
+            {children}
+          </div>
         </div>
       </div>
     </UserProvider>
