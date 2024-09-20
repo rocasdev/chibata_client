@@ -30,24 +30,34 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
-import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
-import { ViewNotificationButton } from "./ViewNotificationButton";
-import { ToggleReadButton } from "./ToggleReadButton";
-import { DeleteNotificationButton } from "./DeleteNotificationButton";
+import {
+  ChevronDown,
+  ArrowBigLeft,
+  ArrowBigRight,
+  FileText,
+  Pencil,
+} from "lucide-react";
+import AddEventModal from "./AddEventModal";
+import { ViewEventButton } from "./ViewEventButton";
+import { ToggleEventStatusButton } from "./ToggleEventStatusButton";
+import { EditEventModal } from "./EditEventModal";
 
-export type Notification = {
-  notification_id: number;
-  user_id: number;
+export type Event = {
+  event_id: number;
   title: string;
-  message: string;
-  createdAt: string;
-  updatedAt: string;
-  is_read: boolean;
+  description: string | null;
+  date: string;
+  time: string;
+  status: "scheduled" | "in-progress" | "completed" | "canceled";
+  state: boolean;
+  created_at: string;
+  updated_at: string;
+  organizer: string;
+  organization: string;
 };
 
-export default function NotificationsTable() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+export default function EventsTable() {
+  const [events, setEvents] = useState<Event[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -55,100 +65,101 @@ export default function NotificationsTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const fetchNotifications = useCallback(async (page: number) => {
+  const fetchEvents = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/notifications?page=${page}`,
+        `http://localhost:4000/api/events?page=${page}`,
         { withCredentials: true },
       );
-      const notifications = response.data.notifications;
+      const events = response.data.events;
       const totalPages = response.data.totalPages;
 
-      setNotifications(notifications);
+      setEvents(events);
       setTotalPages(totalPages);
 
-      console.log(
-        "Fetched notifications:",
-        notifications,
-        "for page:",
-        page,
-      );
+      console.log("Fetched events:", events, "for page:", page);
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching events:", error);
     }
   }, []);
 
   useEffect(() => {
-    fetchNotifications(currentPage);
-  }, [currentPage, fetchNotifications]);
+    fetchEvents(currentPage);
+  }, [currentPage, fetchEvents]);
 
-  const handleDelete = useCallback((notificationId: number) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter(
-        (notification) => notification.notification_id !== notificationId,
-      ),
-    );
-  }, []);
+  const handleEventAdded = useCallback(() => {
+    fetchEvents(currentPage);
+  }, [currentPage, fetchEvents]);
 
-  const handleToggleRead = useCallback(
-    async (updatedNotification: Notification) => {
-      try {
-        setNotifications((prevNotifications) =>
-          prevNotifications.map((notification) =>
-            notification.notification_id === updatedNotification.notification_id
-              ? { ...notification, is_read: !notification.is_read }
-              : notification,
-          ),
-        );
-      } catch (error) {
-        console.error("Error toggling read status:", error);
-      }
-    },
-    [],
-  );
+  const handleEventUpdated = useCallback(() => {
+    fetchEvents(currentPage);
+  }, [currentPage, fetchEvents]);
 
-  const columns: ColumnDef<Notification>[] = [
+  const columns: ColumnDef<Event>[] = [
     {
       accessorKey: "title",
-      header: "Titulo",
+      header: "Título",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("title")}</div>
       ),
     },
     {
-      accessorKey: "message",
-      header: "Mensaje",
+      accessorKey: "description",
+      header: "Descripción",
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "date",
       header: "Fecha",
       cell: ({ row }) => {
-        const date = new Date(row.getValue("createdAt"));
-        return <div>{date.toLocaleString()}</div>;
+        const date = new Date(row.getValue("date"));
+        return <div>{date.toLocaleDateString()}</div>;
       },
     },
     {
-      accessorKey: "is_read",
-      header: "Leído",
-      cell: ({ row }) => <div>{row.getValue("is_read") ? "Yes" : "No"}</div>,
+      accessorKey: "time",
+      header: "Hora",
+    },
+    {
+      accessorKey: "status",
+      header: "Estado",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("status")}</div>
+      ),
+    },
+    {
+      accessorKey: "organizer",
+      header: "Organizador",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("organizer")}</div>
+      ),
+    },
+    {
+      accessorKey: "organization",
+      header: "Organización",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("organization")}</div>
+      ),
+    },
+    {
+      accessorKey: "state",
+      header: "Activo",
+      cell: ({ row }) => <div>{row.getValue("state") ? "Sí" : "No"}</div>,
     },
     {
       id: "actions",
       header: "Acciones",
       cell: ({ row }) => {
-        const notification = row.original;
+        const event = row.original;
         return (
           <div className="flex space-x-2">
-            <ViewNotificationButton
-              notificationId={notification.notification_id}
+            <ViewEventButton eventId={event.event_id} />
+            <ToggleEventStatusButton 
+              event={event}
+              onToggle={handleEventUpdated}
             />
-            <ToggleReadButton
-              notification={notification}
-              onToggle={handleToggleRead}
-            />
-            <DeleteNotificationButton
-              notificationId={notification.notification_id}
-              onDelete={handleDelete}
+            <EditEventModal 
+              event={event}
+              onEventUpdated={handleEventUpdated}
             />
           </div>
         );
@@ -157,7 +168,7 @@ export default function NotificationsTable() {
   ];
 
   const table = useReactTable({
-    data: notifications,
+    data: events,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -187,15 +198,18 @@ export default function NotificationsTable() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="mb-5 text-2xl font-bold">Notificaciones</h1>
+      <div className="mb-10 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Eventos Registrados</h1>
+        <AddEventModal onEventAdded={handleEventAdded} />
+      </div>
 
       <div className="mb-4 flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">
           <Input
-            placeholder="Buscar Mensaje..."
-            value={(table.getColumn("message")?.getFilterValue() as string) ?? ""}
+            placeholder="Buscar Título..."
+            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("message")?.setFilterValue(event.target.value)
+              table.getColumn("title")?.setFilterValue(event.target.value)
             }
             className="h-10 w-[150px] rounded-md border !border-white p-2 lg:w-[250px]"
           />
@@ -269,7 +283,7 @@ export default function NotificationsTable() {
                   colSpan={table.getAllColumns().length}
                   className="text-center"
                 >
-                  No hay notificaciones
+                  No hay eventos registrados
                 </TableCell>
               </TableRow>
             )}
@@ -295,7 +309,9 @@ export default function NotificationsTable() {
           <Button
             variant="outline"
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+            }
           >
             <ArrowBigRight className="h-5 w-5" />
           </Button>

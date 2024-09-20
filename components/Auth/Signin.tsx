@@ -27,11 +27,7 @@ const Signin = () => {
   const signIn = async (values: { email: string; password: string }) => {
     try {
       const response = await axios.post(
-        "http://localhost:1337/api/auth/local",
-        {
-          identifier: values.email,
-          password: values.password,
-        }
+        "http://localhost:4000/api/auth/login", values, { withCredentials: true }
       );
 
       console.log(response.data)

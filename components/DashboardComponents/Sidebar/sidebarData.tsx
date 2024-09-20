@@ -40,13 +40,6 @@ const adminSidebarData: Sidebar[] = [
   },
   {
     id: 5,
-    name: "Localizaciones",
-    path: "/admin/localizations",
-    role: "admin",
-    icon: MapPinCheck,
-  },
-  {
-    id: 6,
     name: "Categorias",
     path: "/admin/categories",
     role: "admin",
@@ -61,13 +54,6 @@ const volunteerSidebarData: Sidebar[] = [
     path: "/volunteer",
     role: "volunteer",
     icon: Home,
-  },
-  {
-    id: 2,
-    name: "Eventos",
-    path: "/volunteer/events",
-    role: "volunteer",
-    icon: Calendar,
   },
   {
     id: 2,
@@ -102,20 +88,13 @@ const organizationSidebarData: Sidebar[] = [
   },
   {
     id: 2,
-    name: "Eventos",
-    path: "/organizer/events",
-    role: "organization",
-    icon: Calendar,
-  },
-  {
-    id: 3,
     name: "Mis Eventos",
     path: "/organizer/my-events",
     role: "organization",
     icon: Calendar,
   },
   {
-    id: 4,
+    id: 3,
     name: "Mi Organizacion",
     path: "/organizer/my-organization",
     role: "organization",

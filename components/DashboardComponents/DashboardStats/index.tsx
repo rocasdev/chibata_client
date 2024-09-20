@@ -22,47 +22,16 @@ const DashboardStats = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const token = localStorage.getItem("jwt"); // Asegúrate de tener el token correcto
-
-        const userCountResponse = await axios.get(
-          "http://localhost:1337/api/users/",
+        const counts = await axios.get(
+          "http://localhost:4000/api/dashboard/counts/",
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true
           },
         );
-        const eventCountResponse = await axios.get(
-          "http://localhost:1337/api/events/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-        const organizationCountResponse = await axios.get(
-          "http://localhost:1337/api/organizations/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
-        // const locationCountResponse = await axios.get(
-        //   "http://localhost:1337/api/locations/",
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${token}`,
-        //     },
-        //   },
-        // );
-        console.log(userCountResponse.data.length);
-        console.log(eventCountResponse.data.length);
-        console.log(organizationCountResponse.data.length);
-        setUserCount(userCountResponse.data.length || 0);
-        setEventCount(eventCountResponse.data.length || 0);
-        setOrganizationCount(organizationCountResponse.data.length || 0);
-        // setLocationCount(locationCountResponse.data.count);
+        setUserCount(counts.data.user_count || 0);
+        setEventCount(counts.data.events_count || 0);
+        setOrganizationCount(counts.data.organizations_count || 0);
+        setLocationCount(counts.data.localization_count || 0);
       } catch (error) {
         console.error("Error fetching counts:", error);
       }
@@ -72,7 +41,7 @@ const DashboardStats = () => {
   }, []);
 
   return (
-    <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <section className="grid grid-cols-1 gap-4 md:grid-cols-1 lg:grid-cols-3">
       <Card className="flex flex-col items-center rounded-lg bg-white p-4 shadow-md dark:bg-gray-900 dark:text-gray-200">
         <CardHeader className="flex w-full flex-row items-center justify-center gap-4">
           <Users2 className="max-h-[40px] min-h-[20px] min-w-[20px] max-w-[40px]" />
@@ -108,25 +77,12 @@ const DashboardStats = () => {
           <BookUser className="max-h-[40px] min-h-[20px] min-w-[20px] max-w-[40px]" />
           <div className="card__text text-center">
             <CardTitle className="text-base sm:text-sm md:text-base lg:text-lg">
-              Organizaciones Registradas
+              Organizaciones <br /> Registradas
             </CardTitle>
             <CardDescription className="mt-2 text-xl text-green-800 dark:text-green-600 sm:text-lg md:text-xl lg:text-2xl">
               {organizationCount !== null && organizationCount !== undefined
                 ? organizationCount
                 : "Cargando..."}
-            </CardDescription>
-          </div>
-        </CardHeader>
-      </Card>
-      <Card className="flex flex-col items-center rounded-lg bg-white p-4 shadow-md dark:bg-gray-900 dark:text-gray-200">
-        <CardHeader className="flex w-full flex-row items-center justify-center gap-4">
-          <MapPinCheck className="max-h-[40px] min-h-[20px] min-w-[20px] max-w-[40px]" />
-          <div className="card__text text-center">
-            <CardTitle className="text-base sm:text-sm md:text-base lg:text-lg">
-              Localizaciones Registradas
-            </CardTitle>
-            <CardDescription className="mt-2 text-xl text-green-800 dark:text-green-600 sm:text-lg md:text-xl lg:text-2xl">
-              {locationCount !== null ? locationCount : "Cargando..."}
             </CardDescription>
           </div>
         </CardHeader>

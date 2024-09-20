@@ -5,7 +5,6 @@ const inter = Inter({ subsets: ["latin"] });
 import Sidebar from "@/components/DashboardComponents/Sidebar";
 import Topbar from "@/components/DashboardComponents/Topbar";
 import { UserProvider, useUser } from '../../context/UserContext';
-import Link from "next/link";
 
 export default function DashboardLayout({
   children,

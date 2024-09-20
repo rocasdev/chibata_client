@@ -1,5 +1,3 @@
-"use client";
-
 import axios from "axios";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -21,19 +19,21 @@ const UserContext = createContext<User | null>(null);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const routeActual = usePathname();
+  const pathname = usePathname();
+
+  // Obtener solo el primer segmento de la ruta
+  const routeActual = `/${pathname.split("/")[1]}`;
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const userData: User = await getUserData();
-        
+
         if (!userData || !userData.id) {
           throw new Error("User not found");
         }
 
         setUser(userData);
-        // Redirigir al usuario según su rol
         if (userData.role_path !== routeActual) {
           toast.success(`Redirigiendo según tu rol: ${userData.role_name}`);
           router.push(userData.role_path);
@@ -101,31 +101,26 @@ export const useUser = () => {
 
 const getUserData = async (): Promise<User> => {
   try {
-    const token = localStorage.getItem("jwt"); // Obtener el token del localStorage o cualquier otro lugar donde lo guardes
-    const res = await axios.get("http://localhost:1337/api/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const res = await axios.get("http://localhost:4000/api/user/me", {
+      withCredentials: true
     });
-    console.log("Full response:", res); // Agrega este log
     if (res.data) {
       const data = res.data;
-      console.log("User data:", data);
-      // Asegúrate de que la estructura de datos coincide con la de tu interfaz
+
       return {
         id: data.id,
-        name: data.name, // Ajusta según la estructura de respuesta de Strapi
-        surname: data.surname, // Ajusta según la estructura de respuesta de Strapi
+        name: data.name,
+        surname: data.surname,
         email: data.email,
-        profile_photo: data.profile_photo || '', // Ajusta según la estructura de respuesta de Strapi
-        role_name: data.role_public_name, // Ajusta según la estructura de respuesta de Strapi
-        role_path: `${data.role_path}`, // Ajusta según la estructura de respuesta de Strapi
+        profile_photo: data.profile_photo || "",
+        role_name: data.role_name,
+        role_path: data.role_path,
       };
     } else {
       throw new Error("Data is empty or invalid");
     }
   } catch (error) {
     console.error("Error fetching data from API:", error);
-    throw error; // Propagar el error para que el useEffect lo capture
+    throw error;
   }
 };

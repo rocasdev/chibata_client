@@ -2,61 +2,93 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import axios from 'axios';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import axios from "axios";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { ImageUp } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 
 const Signup = () => {
   const router = useRouter();
-  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(
+    null,
+  );
 
   const validationSchema = Yup.object({
-    name: Yup.string().required('Este campo es requerido'),
-    surname: Yup.string().required('Este campo es requerido'),
-    email: Yup.string().email('Correo inválido').required('Este campo es requerido'),
-    doc_type: Yup.string().required('Este campo es requerido'),
-    doc_num: Yup.string().required('Este campo es requerido'),
-    phone_number: Yup.string().required('Este campo es requerido'),
+    name: Yup.string().required("Este campo es requerido"),
+    surname: Yup.string().required("Este campo es requerido"),
+    email: Yup.string()
+      .email("Correo inválido")
+      .required("Este campo es requerido"),
+    doc_type: Yup.string().required("Este campo es requerido"),
+    doc_num: Yup.string().required("Este campo es requerido"),
+    phone_number: Yup.string().required("Este campo es requerido"),
     pass: Yup.string()
-      .required('Este campo es requerido')
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.'),
+      .required("Este campo es requerido")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.",
+      ),
     passwordConfirm: Yup.string()
-      .oneOf([Yup.ref('pass')], 'Las contraseñas no coinciden')
-      .required('Este campo es requerido'),
-    image: Yup.mixed().required('Por favor, sube una imagen'),
+      .oneOf([Yup.ref("pass")], "Las contraseñas no coinciden")
+      .required("Este campo es requerido"),
+    profile_photo: Yup.mixed().required("Por favor, sube una imagen"),
   });
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      
-      toast.promise(
-        axios.post('http://localhost:4000/api/auth/registerv', values),
+      const formData = new FormData();
+      Object.keys(values).forEach((key) => {
+        if (key === "profile_photo") {
+          formData.append(key, values[key]);
+        } else {
+          formData.append(key, values[key].toString());
+        }
+      });
+
+      await toast.promise(
+        axios.post("http://localhost:4000/api/auth/registerv", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }),
         {
           loading: "Registrando",
-          success: "Registro existoso",
-          error: "Verifica el formulario de registro"
-        }
-      )
-      router.push("/auth/signin");
-      resetForm();
+          success: (response) => {
+            resetForm();
+            setImagePreview(null);
+            router.push("/auth/signin");
+            return "Registro exitoso";
+          },
+          error: (error) => {
+            console.error("Error during registration:", error);
+            return "Verifica el formulario de registro";
+          },
+        },
+      );
     } catch (error) {
-      toast.error("Algo salio mal durante el registro")
+      console.error("Error during registration:", error);
+      toast.error("Algo salió mal durante el registro");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    setFieldValue,
+  ) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       const reader = new FileReader();
 
       reader.onloadend = () => {
         setImagePreview(reader.result);
+        setFieldValue("profile_photo", file);
       };
 
       reader.readAsDataURL(file);
@@ -114,73 +146,102 @@ const Signup = () => {
 
             <Formik
               initialValues={{
-                name: '',
-                surname: '',
-                email: '',
-                doc_type: '',
-                doc_num: '',
-                phone_number: '',
-                pass: '',
-                passwordConfirm: '',
-                image: null,
+                name: "",
+                surname: "",
+                email: "",
+                doc_type: "",
+                doc_num: "",
+                phone_number: "",
+                pass: "",
+                passwordConfirm: "",
+                profile_photo: null,
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ errors, touched, setFieldValue }) => (
+              {({ errors, touched, setFieldValue, isSubmitting }) => (
                 <Form>
                   {/* Campos del formulario */}
                   <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
                     <div className="w-full lg:w-1/2">
                       <Label htmlFor="name">Nombre</Label>
                       <Field
-                        as={ Input }
+                        as={Input}
                         id="name"
                         name="name"
                         type="text"
                         placeholder="Ej. Andrés"
                         className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
                       />
-                      <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
+                      <ErrorMessage
+                        name="name"
+                        component="div"
+                        className="text-sm text-red-500"
+                      />
                     </div>
 
                     <div className="w-full lg:w-1/2">
                       <Label htmlFor="surname">Apellido</Label>
                       <Field
-                        as={ Input }
+                        as={Input}
                         id="surname"
                         name="surname"
                         type="text"
                         placeholder="Ej. Meza"
                         className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
                       />
-                      <ErrorMessage name="surname" component="div" className="text-red-500 text-sm" />
+                      <ErrorMessage
+                        name="surname"
+                        component="div"
+                        className="text-sm text-red-500"
+                      />
                     </div>
                   </div>
 
                   <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
                     <div className="w-full lg:w-1/2">
                       <Label htmlFor="doc_type">Tipo de Documento</Label>
-                      <Field as="select" id="doc_type" name="doc_type" className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}>
-                        <option className="text-waterloo" value="">Seleccionar...</option>
-                        <option value="CC" className="text-black">Cédula de Ciudadanía</option>
-                        <option value="CE" className="text-black">Cédula de Extranjería</option>
-                        <option value="PA" className="text-black">Pasaporte</option>
+                      <Field
+                        as="select"
+                        id="doc_type"
+                        name="doc_type"
+                        className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
+                      >
+                        <option className="text-waterloo" value="">
+                          Seleccionar...
+                        </option>
+                        <option value="CC" className="text-black">
+                          Cédula de Ciudadanía
+                        </option>
+                        <option value="CE" className="text-black">
+                          Cédula de Extranjería
+                        </option>
+                        <option value="PA" className="text-black">
+                          Pasaporte
+                        </option>
                       </Field>
-                      <ErrorMessage name="doc_type" component="div" className="text-red-500 text-sm" />
+                      <ErrorMessage
+                        name="doc_type"
+                        component="div"
+                        className="text-sm text-red-500"
+                      />
                     </div>
 
                     <div className="w-full lg:w-1/2">
                       <Label htmlFor="doc_number">Numero de documento</Label>
                       <Field
-                        as={ Input }
+                        as={Input}
                         id="doc_number"
                         name="doc_num"
                         type="number"
                         placeholder="Ej. 10065874963"
                         className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
                       />
-                      <ErrorMessage name="doc_num" component="div" className="text-red-500 text-sm" />
+                      <ErrorMessage
+                        name="doc_num"
+                        component="div"
+                        className="text-sm text-red-500"
+                      />
                     </div>
                   </div>
 
@@ -188,27 +249,35 @@ const Signup = () => {
                     <div className="w-full lg:w-1/2">
                       <Label htmlFor="phone_number">Telefono</Label>
                       <Field
-                        as={ Input }
+                        as={Input}
                         id="phone_number"
                         name="phone_number"
                         type="number"
                         placeholder="Ej. 3205869475"
                         className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
                       />
-                      <ErrorMessage name="phone_number" component="div" className="text-red-500 text-sm" />
+                      <ErrorMessage
+                        name="phone_number"
+                        component="div"
+                        className="text-sm text-red-500"
+                      />
                     </div>
 
                     <div className="w-full lg:w-1/2">
                       <Label htmlFor="email">Correo</Label>
                       <Field
-                        as={ Input }
+                        as={Input}
                         id="email"
                         name="email"
                         type="email"
                         placeholder="Ej. andres@ejemplo.com"
                         className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
                       />
-                      <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
+                      <ErrorMessage
+                        name="email"
+                        component="div"
+                        className="text-sm text-red-500"
+                      />
                     </div>
                   </div>
 
@@ -216,60 +285,91 @@ const Signup = () => {
                     <div className="w-full lg:w-1/2">
                       <Label htmlFor="pass">Contraseña</Label>
                       <Field
-                        as={ Input }
+                        as={Input}
                         id="pass"
                         name="pass"
                         type="password"
                         placeholder="··········"
                         className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
                       />
-                      <ErrorMessage name="pass" component="div" className="text-red-500 text-sm" />
+                      <ErrorMessage
+                        name="pass"
+                        component="div"
+                        className="text-sm text-red-500"
+                      />
                     </div>
 
                     <div className="w-full lg:w-1/2">
-                      <Label htmlFor="passwordConfirm">Confirmar Contraseña</Label>
+                      <Label htmlFor="passwordConfirm">
+                        Confirmar Contraseña
+                      </Label>
                       <Field
-                        as={ Input }
+                        as={Input}
                         id="passwordConfirm"
                         name="passwordConfirm"
                         type="password"
                         placeholder="··········"
                         className={`w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white`}
                       />
-                      <ErrorMessage name="passwordConfirm" component="div" className="text-red-500 text-sm" />
-                    </div>
-                  </div>
-
-                  <div className="mb-7.5 flex flex-col gap-2 lg:mb-12.5 justify-center lg:gap-4 w-full items-center">
-                    <Label htmlFor="imgInpSignUp" className="text-sm text-black dark:text-white">Foto de Perfil</Label>
-                    <div className="w-[200px] h-[200px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer p-2 rounded-full" onClick={() => document.getElementById("imgInpSignUp")?.click()}>
-                      {imagePreview ? (
-                        <Image src={imagePreview as string} alt="Vista previa" className="w-full h-full object-cover object-center rounded-full" width={50} height={50} priority={true} />
-                      ) : (
-                        <>
-                          <ImageUp className="w-14 h-14" />
-                          <p>Sube una foto de perfil</p>
-                        </>
-                      )}
-                      <input
-                        name="image"
-                        type="file"
-                        accept="image/*"
-                        onChange={(event) => {
-                          handleImageChange(event);
-                          if (event.target.files) {
-                            setFieldValue('image', event.target.files[0]);
-                          }
-                        }}
-                        className="w-0 h-0 opacity-0"
-                        id="imgInpSignUp"
+                      <ErrorMessage
+                        name="passwordConfirm"
+                        component="div"
+                        className="text-sm text-red-500"
                       />
                     </div>
                   </div>
 
+                  <div className="mb-7.5 flex w-full flex-col items-center justify-center gap-2 lg:mb-12.5 lg:gap-4">
+                    <Label
+                      htmlFor="imgInpSignUp"
+                      className="text-sm text-black dark:text-white"
+                    >
+                      Foto de Perfil
+                    </Label>
+                    <div
+                      className="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center rounded-full border-2 border-dashed p-2"
+                      onClick={() =>
+                        document.getElementById("imgInpSignUp")?.click()
+                      }
+                    >
+                      {imagePreview ? (
+                        <Image
+                          src={imagePreview as string}
+                          alt="Vista previa"
+                          className="h-full w-full rounded-full object-cover object-center"
+                          width={200}
+                          height={200}
+                        />
+                      ) : (
+                        <>
+                          <ImageUp className="h-14 w-14" />
+                          <p>Sube una foto de perfil</p>
+                        </>
+                      )}
+                      <input
+                        name="profile_photo"
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) =>
+                          handleImageChange(event, setFieldValue)
+                        }
+                        className="h-0 w-0 opacity-0"
+                        id="imgInpSignUp"
+                      />
+                    </div>
+                    <ErrorMessage
+                      name="profile_photo"
+                      component="div"
+                      className="text-sm text-red-500"
+                    />
+                  </div>
+
                   <div className="flex flex-wrap items-center gap-10 md:justify-between xl:gap-15">
                     <div className="flex flex-wrap gap-4 md:gap-10">
-                      <Link href="/auth/signuporg" className="hover:text-green-700">
+                      <Link
+                        href="/auth/signuporg"
+                        className="hover:text-green-700"
+                      >
                         Registrarme como organización
                       </Link>
                     </div>
@@ -277,9 +377,10 @@ const Signup = () => {
                     <button
                       aria-label="Registro"
                       type="submit"
-                      className="inline-flex items-center gap-2.5 rounded-full bg-green-800 px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-green-700 dark:hover:bg-blackho"
+                      disabled={isSubmitting}
+                      className="inline-flex items-center gap-2.5 rounded-full bg-green-800 px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho disabled:opacity-50 dark:bg-green-700 dark:hover:bg-blackho"
                     >
-                      Registrarme
+                      {isSubmitting ? "Registrando..." : "Registrarme"}
                       <svg
                         className="fill-white"
                         width="14"
@@ -299,9 +400,12 @@ const Signup = () => {
               )}
             </Formik>
 
-            <p className="text-body-color text-center text-base mt-5 py-5">
-              ¿Ya tienes cuenta?{' '}
-              <Link href="/auth/signin" className="text-green-700 hover:underline">
+            <p className="text-body-color mt-5 py-5 text-center text-base">
+              ¿Ya tienes cuenta?{" "}
+              <Link
+                href="/auth/signin"
+                className="text-green-700 hover:underline"
+              >
                 Inicia Sesión
               </Link>
             </p>
