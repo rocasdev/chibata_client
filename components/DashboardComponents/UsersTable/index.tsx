@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
   ColumnDef,
@@ -15,7 +15,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import {
-  Table as UITable,
+  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -34,33 +34,25 @@ import {
   ChevronDown,
   ArrowBigLeft,
   ArrowBigRight,
-  FileText,
-  Pencil,
-  Calendar,
+  UserCircle2Icon,
 } from "lucide-react";
-import { ToggleEventStatusButton } from "./ToggleEventStatusButton";
 import Link from "next/link";
 
-export type Event = {
-  event_id: number;
-  title: string;
-  description: string | null;
-  slug: string;
-  date_time: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  banner: string;
-  status: "Programado" | "En Progreso" | "Finalizado" | "Cancelado";
-  state: boolean;
+export type User = {
+  user_id: string;
+  firstname: string;
+  surname: string;
+  email: string;
   created_at: string;
   updated_at: string;
-  organizer: string;
-  organization: string;
+  Role: {
+    name: string;
+    path: string;
+  };
 };
 
-export default function EventsTable() {
-  const [events, setEvents] = useState<Event[]>([]);
+export default function UsersTable() {
+  const [users, setUsers] = useState<User[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -68,99 +60,70 @@ export default function EventsTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const fetchEvents = useCallback(async (page: number) => {
+  const fetchUsers = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/events?page=${page}`,
+        `http://localhost:4000/api/users?page=${page}&limit=10`,
         { withCredentials: true },
       );
-      const events = response.data.events;
+      const users = response.data.users;
       const totalPages = response.data.totalPages;
 
-      setEvents(events);
+      setUsers(users);
       setTotalPages(totalPages);
 
-      console.log("Fetched events:", events, "for page:", page);
+      console.log("Fetched users:", users, "for page:", page);
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error("Error fetching users:", error);
     }
   }, []);
 
   useEffect(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
+    fetchUsers(currentPage);
+  }, [currentPage, fetchUsers]);
 
-  const handleEventAdded = useCallback(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
-
-  const handleEventUpdated = useCallback(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
-
-  const columns: ColumnDef<Event>[] = [
+  const columns: ColumnDef<User>[] = [
     {
-      accessorKey: "title",
-      header: "Título",
+      accessorKey: "user_id",
+      header: "id",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("title")}</div>
+        <div className="font-medium">{row.getValue("user_id")}</div>
       ),
     },
     {
-      accessorKey: "description",
-      header: "Descripción",
+      accessorKey: "firstname",
+      header: "Nombre",
     },
     {
-      accessorKey: "date_time",
-      header: "Fecha y Hora",
+      accessorKey: "surname",
+      header: "Apellido",
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      accessorKey: "Role.name",
+      header: "Rol",
+    },
+    {
+      accessorKey: "created_at",
+      header: "Creado en",
       cell: ({ row }) => {
-        const date = new Date(row.getValue("date_time"));
+        const date = new Date(row.getValue("created_at"));
         return <div>{date.toLocaleString()}</div>;
       },
-    },
-    {
-      accessorKey: "status",
-      header: "Estado",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("status")}</div>
-      ),
-    },
-    {
-      accessorKey: "organizer",
-      header: "Organizador",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("organizer")}</div>
-      ),
-    },
-    {
-      accessorKey: "organization",
-      header: "Organización",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("organization")}</div>
-      ),
-    },
-    {
-      accessorKey: "state",
-      header: "Activo",
-      cell: ({ row }) => <div>{row.getValue("state") ? "Sí" : "No"}</div>,
     },
     {
       id: "actions",
       header: "Acciones",
       cell: ({ row }) => {
-        const event = row.original;
+        const user = row.original;
         return (
           <div className="flex space-x-2">
-            <Link
-              href={`/admin/events/${event.event_id}`}
-              className="text-blue-500 hover:text-blue-700"
-            >
-              <Calendar className="h-5 w-5 " />
+            <Link href={`/admin/users/${user.user_id}`}>
+              <UserCircle2Icon className="text-blue-500" />
             </Link>
-            <ToggleEventStatusButton
-              event={event}
-              onToggle={handleEventUpdated}
-            />
           </div>
         );
       },
@@ -168,7 +131,7 @@ export default function EventsTable() {
   ];
 
   const table = useReactTable({
-    data: events,
+    data: users,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -198,23 +161,15 @@ export default function EventsTable() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Eventos Registrados</h1>
-        <Link
-          href={"/admin/events/create"}
-          className="rounded-lg bg-gray-900 p-3 text-white"
-        >
-          Crear Evento
-        </Link>
-      </div>
+      <h1 className="mb-5 text-2xl font-bold">Usuarios Registrados</h1>
 
       <div className="mb-4 flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">
           <Input
-            placeholder="Buscar Título..."
-            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+            placeholder="Buscar por correo..."
+            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("title")?.setFilterValue(event.target.value)
+              table.getColumn("email")?.setFilterValue(event.target.value)
             }
             className="h-10 w-[150px] rounded-md border !border-white p-2 lg:w-[250px]"
           />
@@ -223,7 +178,7 @@ export default function EventsTable() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columnas <ChevronDown className="ml-2 h-4 w-4" />
+              Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -247,7 +202,7 @@ export default function EventsTable() {
       </div>
 
       <div className="rounded-md border">
-        <UITable>
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -288,12 +243,12 @@ export default function EventsTable() {
                   colSpan={table.getAllColumns().length}
                   className="text-center"
                 >
-                  No hay eventos registrados
+                  No users found
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
-        </UITable>
+        </Table>
 
         <div className="flex items-center justify-between border-t p-4">
           <Button
@@ -305,9 +260,9 @@ export default function EventsTable() {
           </Button>
 
           <div>
-            Página{" "}
+            Page{" "}
             <strong>
-              {currentPage} de {totalPages}
+              {currentPage} of {totalPages}
             </strong>
           </div>
 

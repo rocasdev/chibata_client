@@ -16,7 +16,6 @@ const DashboardStats = () => {
   const [organizationCount, setOrganizationCount] = useState<number | null>(
     null,
   );
-  const [locationCount, setLocationCount] = useState<number | null>(null);
 
   // Fetch counts on component mount
   useEffect(() => {
@@ -28,10 +27,9 @@ const DashboardStats = () => {
             withCredentials: true
           },
         );
-        setUserCount(counts.data.user_count || 0);
-        setEventCount(counts.data.events_count || 0);
-        setOrganizationCount(counts.data.organizations_count || 0);
-        setLocationCount(counts.data.localization_count || 0);
+        setUserCount(counts.data.user_counts || 0);
+        setEventCount(counts.data.event_counts || 0);
+        setOrganizationCount(counts.data.organization_counts || 0);
       } catch (error) {
         console.error("Error fetching counts:", error);
       }

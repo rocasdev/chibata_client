@@ -36,31 +36,26 @@ import {
   ArrowBigRight,
   FileText,
   Pencil,
-  Calendar,
 } from "lucide-react";
-import { ToggleEventStatusButton } from "./ToggleEventStatusButton";
 import Link from "next/link";
 
-export type Event = {
-  event_id: number;
-  title: string;
-  description: string | null;
-  slug: string;
-  date_time: string;
+export interface OrganizationAttributes {
+  organization_id: Buffer;
+  name: string;
+  nit: string;
+  logo?: string;
+  relative_logo_url?: string;
   address: string;
-  latitude: number;
-  longitude: number;
-  banner: string;
-  status: "Programado" | "En Progreso" | "Finalizado" | "Cancelado";
-  state: boolean;
-  created_at: string;
-  updated_at: string;
-  organizer: string;
-  organization: string;
-};
+  founding_date: string;
+  contact_number: number;
+  is_active: boolean;
+  website?: string;
+}
 
-export default function EventsTable() {
-  const [events, setEvents] = useState<Event[]>([]);
+export default function OrganizationsTable() {
+  const [organizations, setOrganizations] = useState<OrganizationAttributes[]>(
+    [],
+  );
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -68,99 +63,96 @@ export default function EventsTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const fetchEvents = useCallback(async (page: number) => {
+  const fetchOrganizations = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/events?page=${page}`,
+        `http://localhost:4000/api/organizations?page=${page}`,
         { withCredentials: true },
       );
-      const events = response.data.events;
+      const organizations = response.data.organizations;
       const totalPages = response.data.totalPages;
 
-      setEvents(events);
+      setOrganizations(organizations);
       setTotalPages(totalPages);
 
-      console.log("Fetched events:", events, "for page:", page);
+      console.log("Fetched organizations:", organizations, "for page:", page);
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error("Error fetching organizations:", error);
     }
   }, []);
 
   useEffect(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
+    fetchOrganizations(currentPage);
+  }, [currentPage, fetchOrganizations]);
 
-  const handleEventAdded = useCallback(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
+  const handleOrganizationUpdated = useCallback(() => {
+    fetchOrganizations(currentPage);
+  }, [currentPage, fetchOrganizations]);
 
-  const handleEventUpdated = useCallback(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
-
-  const columns: ColumnDef<Event>[] = [
+  const columns: ColumnDef<OrganizationAttributes>[] = [
     {
-      accessorKey: "title",
-      header: "Título",
+      accessorKey: "name",
+      header: "Nombre",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("title")}</div>
+        <div className="capitalize">{row.getValue("name")}</div>
       ),
     },
     {
-      accessorKey: "description",
-      header: "Descripción",
+      accessorKey: "nit",
+      header: "NIT",
     },
     {
-      accessorKey: "date_time",
-      header: "Fecha y Hora",
+      accessorKey: "founding_date",
+      header: "Fecha de Fundación",
       cell: ({ row }) => {
-        const date = new Date(row.getValue("date_time"));
-        return <div>{date.toLocaleString()}</div>;
+        const date = new Date(row.getValue("founding_date"));
+        return <div>{date.toLocaleDateString()}</div>;
       },
     },
     {
-      accessorKey: "status",
-      header: "Estado",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("status")}</div>
-      ),
+      accessorKey: "address",
+      header: "Dirección",
     },
     {
-      accessorKey: "organizer",
-      header: "Organizador",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("organizer")}</div>
-      ),
+      accessorKey: "contact_number",
+      header: "Contacto",
     },
     {
-      accessorKey: "organization",
-      header: "Organización",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("organization")}</div>
-      ),
-    },
-    {
-      accessorKey: "state",
+      accessorKey: "is_active",
       header: "Activo",
-      cell: ({ row }) => <div>{row.getValue("state") ? "Sí" : "No"}</div>,
+      cell: ({ row }) => <div>{row.getValue("is_active") ? "Sí" : "No"}</div>,
+    },
+    {
+      accessorKey: "website",
+      header: "Sitio Web",
+      cell: ({ row }) =>
+        row.getValue("website") ? (
+          <a
+            href={row.getValue("website")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:text-blue-700"
+          >
+            {row.getValue("website")}
+          </a>
+        ) : (
+          "N/A"
+        ),
     },
     {
       id: "actions",
       header: "Acciones",
       cell: ({ row }) => {
-        const event = row.original;
+        const organization = row.original;
         return (
           <div className="flex space-x-2">
             <Link
-              href={`/admin/events/${event.event_id}`}
+              href={`/admin/organizations/${organization.organization_id}`}
               className="text-blue-500 hover:text-blue-700"
             >
-              <Calendar className="h-5 w-5 " />
+              <Pencil className="h-5 w-5 " />
             </Link>
-            <ToggleEventStatusButton
-              event={event}
-              onToggle={handleEventUpdated}
-            />
+            {/* Add more action buttons if needed */}
           </div>
         );
       },
@@ -168,7 +160,7 @@ export default function EventsTable() {
   ];
 
   const table = useReactTable({
-    data: events,
+    data: organizations,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -199,22 +191,22 @@ export default function EventsTable() {
   return (
     <div className="container mx-auto py-10">
       <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Eventos Registrados</h1>
+        <h1 className="text-2xl font-bold">Organizaciones Registradas</h1>
         <Link
-          href={"/admin/events/create"}
+          href={"/admin/organizations/create"}
           className="rounded-lg bg-gray-900 p-3 text-white"
         >
-          Crear Evento
+          Crear Organización
         </Link>
       </div>
 
       <div className="mb-4 flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">
           <Input
-            placeholder="Buscar Título..."
-            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+            placeholder="Buscar Nombre..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("title")?.setFilterValue(event.target.value)
+              table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="h-10 w-[150px] rounded-md border !border-white p-2 lg:w-[250px]"
           />
@@ -288,7 +280,7 @@ export default function EventsTable() {
                   colSpan={table.getAllColumns().length}
                   className="text-center"
                 >
-                  No hay eventos registrados
+                  No hay organizaciones registradas
                 </TableCell>
               </TableRow>
             )}

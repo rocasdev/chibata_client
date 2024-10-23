@@ -1,3 +1,5 @@
+"use client"
+
 import axios from "axios";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -5,11 +7,14 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
 interface User {
-  id: number;
-  name: string;
+  user_id: string;
+  firstname: string;
   surname: string;
   email: string;
-  profile_photo: string;
+  doc_type: string;
+  doc_num: string;
+  phone_number: string;
+  avatar?: string;
   role_name: string;
   role_path: string;
 }
@@ -29,7 +34,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const userData: User = await getUserData();
 
-        if (!userData || !userData.id) {
+        if (!userData || !userData.user_id) {
           throw new Error("User not found");
         }
 
@@ -101,20 +106,23 @@ export const useUser = () => {
 
 const getUserData = async (): Promise<User> => {
   try {
-    const res = await axios.get("http://localhost:4000/api/user/me", {
+    const res = await axios.get("http://localhost:4000/api/users/me", {
       withCredentials: true
     });
     if (res.data) {
-      const data = res.data;
+      const data = res.data.user;
 
       return {
-        id: data.id,
-        name: data.name,
+        user_id: data.user_id,
+        firstname: data.firstname,  
         surname: data.surname,
         email: data.email,
-        profile_photo: data.profile_photo || "",
-        role_name: data.role_name,
-        role_path: data.role_path,
+        doc_type: data.doc_type,
+        doc_num: data.doc_num,
+        phone_number: data.phone_number,
+        avatar: data.avatar,
+        role_name: data.Role.name,
+        role_path: data.Role.path,
       };
     } else {
       throw new Error("Data is empty or invalid");

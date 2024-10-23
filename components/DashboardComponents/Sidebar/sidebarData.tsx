@@ -4,7 +4,6 @@ import {
   Building,
   Calendar,
   Home,
-  MapPinCheck,
   Tag,
   Users2,
 } from "lucide-react";

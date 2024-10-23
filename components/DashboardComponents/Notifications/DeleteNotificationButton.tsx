@@ -15,7 +15,7 @@ export function DeleteNotificationButton({
 
   const deleteNotification = async () => {
     try {
-      await axios.delete(`http://localhost:4000/api/notifications/${notificationId}`, {withCredentials: true});
+      await axios.delete(`http://localhost:4000/api/dashboard/notifications/${notificationId}`, {withCredentials: true});
       console.log("Notification deleted");
       setOpen(false);
       if (onDelete) {

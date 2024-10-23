@@ -32,19 +32,155 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
-import { ViewNotificationButton } from "./ViewNotificationButton";
-import { ToggleReadButton } from "./ToggleReadButton";
-import { DeleteNotificationButton } from "./DeleteNotificationButton";
 
 export type Notification = {
   notification_id: number;
   user_id: number;
   title: string;
   message: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
   is_read: boolean;
 };
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { FileText, Eye, EyeOff, Trash } from "lucide-react";
+
+function ViewNotificationButton({
+  notification,
+}: {
+  notification: Notification;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="text-blue-500 hover:text-blue-700"
+      >
+        <FileText className="h-5 w-5" />
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Detalles de la Notificación</DialogTitle>
+            <hr className="shadow-lg"/>
+          </DialogHeader>
+          <div>
+            <p className="mb-4 font-light">
+              <strong className="font-bold">Título:</strong> {notification.title}
+            </p>
+            <p className="mb-4 font-light">
+              <strong className="font-bold">Mensaje:</strong> {notification.message}
+            </p>
+            <p className="mb-4 font-light">
+              <strong className="font-bold">Fecha:</strong>{" "}
+              {new Date(notification.created_at).toLocaleString()}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function ToggleReadButton({
+  notification,
+  onToggle,
+}: {
+  notification: Notification;
+  onToggle: (notification: Notification) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const handleToggle = () => {
+    onToggle(notification);
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="text-green-500 hover:text-green-700"
+      >
+        {notification.is_read ? (
+          <EyeOff className="h-5 w-5" />
+        ) : (
+          <Eye className="h-5 w-5" />
+        )}
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar cambio de estado</DialogTitle>
+          </DialogHeader>
+          <p>
+            ¿Estás seguro que deseas marcar esta notificación como{" "}
+            {notification.is_read ? "no leída" : "leída"}?
+          </p>
+          <DialogFooter>
+            <Button variant="destructive" onClick={handleToggle}>
+              Confirmar
+            </Button>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function DeleteNotificationButton({
+  notificationId,
+  onDelete,
+}: {
+  notificationId: number;
+  onDelete: (id: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const handleDelete = () => {
+    onDelete(notificationId);
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="text-red-500 hover:text-red-700"
+      >
+        <Trash className="h-5 w-5" />
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar Notificación</DialogTitle>
+          </DialogHeader>
+          <p>¿Estás seguro que deseas eliminar esta notificación?</p>
+          <DialogFooter>
+            <Button variant="destructive" onClick={handleDelete}>
+              Eliminar
+            </Button>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
 
 export default function NotificationsTable() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -58,7 +194,7 @@ export default function NotificationsTable() {
   const fetchNotifications = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/notifications?page=${page}`,
+        `http://localhost:4000/api/notifications/own?page=${page}&limit=10`,
         { withCredentials: true },
       );
       const notifications = response.data.notifications;
@@ -67,45 +203,47 @@ export default function NotificationsTable() {
       setNotifications(notifications);
       setTotalPages(totalPages);
 
-      console.log(
-        "Fetched notifications:",
-        notifications,
-        "for page:",
-        page,
-      );
+      console.log("Fetched notifications:", notifications, "for page:", page);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
   }, []);
 
-  useEffect(() => {
-    fetchNotifications(currentPage);
-  }, [currentPage, fetchNotifications]);
-
-  const handleDelete = useCallback((notificationId: number) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter(
-        (notification) => notification.notification_id !== notificationId,
-      ),
-    );
-  }, []);
+  const handleDelete = useCallback(
+    async (notificationId: number) => {
+      try {
+        await axios.delete(
+          `http://localhost:4000/api/notifications/${notificationId}`,
+          { withCredentials: true },
+        );
+        await fetchNotifications(currentPage);
+      } catch (error) {
+        console.error("Error deleting notification:", error);
+      }
+    },
+    [currentPage, fetchNotifications],
+  );
 
   const handleToggleRead = useCallback(
     async (updatedNotification: Notification) => {
       try {
-        setNotifications((prevNotifications) =>
-          prevNotifications.map((notification) =>
-            notification.notification_id === updatedNotification.notification_id
-              ? { ...notification, is_read: !notification.is_read }
-              : notification,
-          ),
+        // Actualizar en el servidor
+        await axios.patch(
+          `http://localhost:4000/api/notifications/${updatedNotification.notification_id}`,
+          null,
+          { withCredentials: true },
         );
+        await fetchNotifications(currentPage);
       } catch (error) {
         console.error("Error toggling read status:", error);
       }
     },
-    [],
+    [currentPage, fetchNotifications],
   );
+
+  useEffect(() => {
+    fetchNotifications(currentPage);
+  }, [currentPage, fetchNotifications]);
 
   const columns: ColumnDef<Notification>[] = [
     {
@@ -120,17 +258,17 @@ export default function NotificationsTable() {
       header: "Mensaje",
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "created_at",
       header: "Fecha",
       cell: ({ row }) => {
-        const date = new Date(row.getValue("createdAt"));
+        const date = new Date(row.getValue("created_at"));
         return <div>{date.toLocaleString()}</div>;
       },
     },
     {
       accessorKey: "is_read",
       header: "Leído",
-      cell: ({ row }) => <div>{row.getValue("is_read") ? "Yes" : "No"}</div>,
+      cell: ({ row }) => <div>{row.getValue("is_read") ? "Sí" : "No"}</div>,
     },
     {
       id: "actions",
@@ -140,7 +278,7 @@ export default function NotificationsTable() {
         return (
           <div className="flex space-x-2">
             <ViewNotificationButton
-              notificationId={notification.notification_id}
+              notification={notification}
             />
             <ToggleReadButton
               notification={notification}
@@ -193,7 +331,9 @@ export default function NotificationsTable() {
         <div className="flex flex-1 items-center space-x-2">
           <Input
             placeholder="Buscar Mensaje..."
-            value={(table.getColumn("message")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("message")?.getFilterValue() as string) ?? ""
+            }
             onChange={(event) =>
               table.getColumn("message")?.setFilterValue(event.target.value)
             }
@@ -295,7 +435,9 @@ export default function NotificationsTable() {
           <Button
             variant="outline"
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+            }
           >
             <ArrowBigRight className="h-5 w-5" />
           </Button>

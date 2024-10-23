@@ -17,6 +17,9 @@ const Signuporg = () => {
   const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(
     null,
   );
+  const [logoPreview, setLogoPreview] = useState<string | ArrayBuffer | null>(
+    null,
+  );
 
   const validationSchema = Yup.object({
     org_name: Yup.string().required("Este campo es requerido"),
@@ -28,6 +31,7 @@ const Signuporg = () => {
       .min(10, "Debe ser mínimo 10 digitos")
       .max(10, "Debe ser máximo 10 digitos"),
     website: Yup.string().required("Este campo es requerido"),
+    org_logo: Yup.mixed(),
     name: Yup.string().required("Este campo es requerido"),
     surname: Yup.string().required("Este campo es requerido"),
     email: Yup.string()
@@ -54,44 +58,44 @@ const Signuporg = () => {
     profile_photo: Yup.mixed(),
   });
 
-  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      setSubmitting(true);
       const formData = new FormData();
-
-      // Añadir todos los campos del formulario al FormData
       Object.keys(values).forEach((key) => {
-        if (key === "profile_photo" && values[key]) {
+        if (key === "profile_photo" || key === "org_logo") {
           formData.append(key, values[key]);
         } else {
           formData.append(key, values[key].toString());
         }
       });
 
-      const response = await axios.post(
-        "http://localhost:4000/api/auth/registerorg",
-        formData,
+      await toast.promise(
+        axios.post(
+          "http://localhost:4000/api/auth/register-organization",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        ),
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
+          loading: "Registrando",
+          success: (response) => {
+            resetForm();
+            setImagePreview(null);
+            router.push("/auth/signin");
+            return "Registro exitoso";
+          },
+          error: (error) => {
+            console.error("Error during registration:", error);
+            return "Verifica el formulario de registro";
           },
         },
       );
-
-      if (response.status === 200) {
-        toast.success("Registro exitoso");
-        router.push("/auth/signin");
-      } else {
-        throw new Error(response.data.message || "Error en el registro");
-      }
     } catch (error) {
-      console.error("Error durante el registro:", error);
-      if (error.response && error.response.data) {
-        setErrors(error.response.data);
-        toast.error(error.response.data.message || "Error en el registro");
-      } else {
-        toast.error("Error en el registro. Por favor, inténtalo de nuevo.");
-      }
+      console.error("Error during registration:", error);
+      toast.error("Algo salió mal durante el registro");
     } finally {
       setSubmitting(false);
     }
@@ -100,14 +104,20 @@ const Signuporg = () => {
   const handleImageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     setFieldValue,
+    type: "profile" | "logo",
   ) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       const reader = new FileReader();
 
       reader.onloadend = () => {
-        setImagePreview(reader.result);
-        setFieldValue("profile_photo", file);
+        if (type === "profile") {
+          setImagePreview(reader.result);
+          setFieldValue("profile_photo", file);
+        } else {
+          setLogoPreview(reader.result);
+          setFieldValue("org_logo", file);
+        }
       };
 
       reader.readAsDataURL(file);
@@ -171,6 +181,7 @@ const Signuporg = () => {
                 registration_date: "",
                 contact_number: "",
                 website: "",
+                org_logo: null,
                 name: "",
                 surname: "",
                 email: "",
@@ -247,7 +258,7 @@ const Signuporg = () => {
 
                     <div className="w-full lg:w-1/2">
                       <Label htmlFor="registration_date">
-                        Fecha de Creación
+                        Fecha de Fundación
                       </Label>
                       <Field
                         as={Input}
@@ -303,10 +314,50 @@ const Signuporg = () => {
                     </div>
                   </div>
 
+                  <div className="mb-7.5 flex w-full flex-col items-center justify-center gap-2 lg:mb-12.5 lg:gap-4">
+                    <Label
+                      htmlFor="imgInpLogo"
+                      className="text-md text-neutral-400"
+                    >
+                      Logo de la Organización
+                    </Label>
+                    <div
+                      className="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center rounded-full border-2 border-dashed p-2"
+                      onClick={() =>
+                        document.getElementById("imgInpLogo")?.click()
+                      }
+                    >
+                      {logoPreview ? (
+                        <Image
+                          src={logoPreview as string}
+                          alt="Vista previa del logo"
+                          className="h-full w-full rounded-full object-cover object-center"
+                          width={200}
+                          height={200}
+                        />
+                      ) : (
+                        <>
+                          <ImageUp className="h-14 w-14" />
+                          <p className="text-center">Sube el logo de la organización</p>
+                        </>
+                      )}
+                      <input
+                        name="org_logo"
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) =>
+                          handleImageChange(event, setFieldValue, "logo")
+                        }
+                        className="h-0 w-0 opacity-0"
+                        id="imgInpLogo"
+                      />
+                    </div>
+                  </div>
+
                   <div className="mb-10 flex items-center justify-center">
                     <span className="dark:bg-stroke-dark hidden h-[1px] w-full max-w-[200px] bg-stroke dark:bg-strokedark sm:block"></span>
                     <p className="text-body-color dark:text-body-color-dark w-full px-5 text-center text-base">
-                      Datos del Representante
+                      Datos del Organizador
                     </p>
                     <span className="dark:bg-stroke-dark hidden h-[1px] w-full max-w-[200px] bg-stroke dark:bg-strokedark sm:block"></span>
                   </div>
@@ -396,7 +447,7 @@ const Signuporg = () => {
 
                   <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
                     <div className="w-full lg:w-1/2">
-                      <Label htmlFor="phone_number">Telefono</Label>
+                      <Label htmlFor="phone_number">Celular</Label>
                       <Field
                         as={Input}
                         id="phone_number"
@@ -500,7 +551,7 @@ const Signuporg = () => {
                         type="file"
                         accept="image/*"
                         onChange={(event) =>
-                          handleImageChange(event, setFieldValue)
+                          handleImageChange(event, setFieldValue, "profile")
                         }
                         className="h-0 w-0 opacity-0"
                         id="imgInpSignUp"

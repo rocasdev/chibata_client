@@ -51,11 +51,15 @@ const Signup = () => {
       });
 
       await toast.promise(
-        axios.post("http://localhost:4000/api/auth/registerv", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
+        axios.post(
+          "http://localhost:4000/api/auth/register-volunteer",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           },
-        }),
+        ),
         {
           loading: "Registrando",
           success: (response) => {

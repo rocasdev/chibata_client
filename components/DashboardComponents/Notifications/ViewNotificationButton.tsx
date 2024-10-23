@@ -27,7 +27,7 @@ export function ViewNotificationButton({
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/notifications/${notificationId}`,
+        `http://localhost:4000/api/dashboard/notifications/${notificationId}`,
         { withCredentials: true },
       );
       console.log(response.data);
@@ -69,7 +69,7 @@ export function ViewNotificationButton({
               </p>
               <p>
                 <strong>Fecha:</strong>{" "}
-                {new Date(notificationData.createdAt).toLocaleString()}
+                {new Date(notificationData.created_at).toLocaleString()}
               </p>
             </div>
           ) : (

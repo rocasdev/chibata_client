@@ -1,13 +1,14 @@
+import Welcome from "@/components/DashboardComponents/Welcome";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Chibatá | Organizador"
+  title: "Chibatá | Organizador",
 };
 
 export default function Dashboard() {
   return (
     <div>
-      <h1>Hola!</h1>
+      <Welcome />
     </div>
   );
 }

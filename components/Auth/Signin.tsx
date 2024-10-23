@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -6,13 +6,12 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
 const Signin = () => {
-  const router = useRouter();
 
   const initialValues = {
     email: "",
@@ -30,18 +29,15 @@ const Signin = () => {
         "http://localhost:4000/api/auth/login", values, { withCredentials: true }
       );
 
-      console.log(response.data)
+      console.log(response.data.user.role_path);
 
-      const { jwt, user } = response.data;
-
-      localStorage.setItem("jwt", jwt);
-      localStorage.setItem("user", JSON.stringify(user));
+      const user = response.data.user;
       let rolePath = user.role_path;
 
-      router.push(rolePath);
+      redirect(rolePath);
     } catch (error) {
-      console.error("Error al iniciar sesión:", error); // Imprime el error para más detalles
-      throw error; // Re-lanza el error para que sea manejado por toast.promise
+      console.error("Error al iniciar sesión:", error);
+      throw error;
     }
   };
 
@@ -140,7 +136,7 @@ const Signin = () => {
                     id="password"
                     type="password"
                     name="password"
-                    placeholder="···········"
+                    placeholder="Contraseña Segura"
                     className="w-full border-b border-stroke !bg-white pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:!bg-black dark:focus:border-manatee dark:focus:placeholder:text-white"
                   />
                   <ErrorMessage

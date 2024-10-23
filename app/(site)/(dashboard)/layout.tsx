@@ -22,7 +22,7 @@ export default function DashboardLayout({
         {/* Content */}
         <div className="flex flex-col w-full lg-[82%]">
           <Topbar />
-          <div className="content w-full h-[calc(100vh-60px)] overflow-x-hidden overflow-y-scroll p-4">
+          <div className="content w-full h-[calc(100vh-60px)] overflow-x-hidden overflow-y-auto p-4">
             {children}
           </div>
         </div>

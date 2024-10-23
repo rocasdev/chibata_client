@@ -1,5 +1,3 @@
-"use client"
-
 import { Metadata } from "next";
 import Image from "next/image";
 
@@ -21,14 +19,14 @@ const ErroPage = () => {
         />
 
         <h2 className="mb-5 text-2xl font-semibold text-black dark:text-white md:text-4xl">
-          Ops... No creo que puedas ir más lejos
+          Ops... No encontramos esta página
         </h2>
         <p className="mb-7.5">
           La pagína que estas buscando no existe, verifica la ruta a la que intentas acceder y prueba nuevamente
         </p>
 
         <a
-          href="/web"
+          href="/"
           className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark dark:hover:bg-blackho"
         >
           Volver al inicio

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import Link from "next/link";
 import {
   ColumnDef,
   SortingState,
@@ -14,6 +14,16 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import { useEffect, useState, useCallback } from "react";
+import {
+  ChevronDown,
+  ArrowBigLeft,
+  ArrowBigRight,
+  FileText,
+  Pencil,
+  ToggleLeft,
+  ToggleRight,
+} from "lucide-react";
 import {
   Table as UITable,
   TableBody,
@@ -23,44 +33,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  ChevronDown,
-  ArrowBigLeft,
-  ArrowBigRight,
-  FileText,
-  Pencil,
-  Calendar,
-} from "lucide-react";
-import { ToggleEventStatusButton } from "./ToggleEventStatusButton";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export type Event = {
-  event_id: number;
-  title: string;
-  description: string | null;
-  slug: string;
-  date_time: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  banner: string;
-  status: "Programado" | "En Progreso" | "Finalizado" | "Cancelado";
-  state: boolean;
-  created_at: string;
-  updated_at: string;
-  organizer: string;
-  organization: string;
-};
+interface Category {
+  category_id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+}
 
-export default function EventsTable() {
-  const [events, setEvents] = useState<Event[]>([]);
+export default function CategoriesTable() {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -68,42 +57,38 @@ export default function EventsTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const fetchEvents = useCallback(async (page: number) => {
+  const fetchCategories = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/events?page=${page}`,
+        `http://localhost:4000/api/categories?page=${page}`,
         { withCredentials: true },
       );
-      const events = response.data.events;
+      const categories = response.data.categories;
       const totalPages = response.data.totalPages;
 
-      setEvents(events);
+      setCategories(categories);
       setTotalPages(totalPages);
 
-      console.log("Fetched events:", events, "for page:", page);
+      console.log("Fetched categories:", categories, "for page:", page);
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error("Error fetching categories:", error);
     }
   }, []);
 
   useEffect(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
+    fetchCategories(currentPage);
+  }, [currentPage, fetchCategories]);
 
-  const handleEventAdded = useCallback(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
+  const handleCategoryUpdated = useCallback(() => {
+    fetchCategories(currentPage);
+  }, [currentPage, fetchCategories]);
 
-  const handleEventUpdated = useCallback(() => {
-    fetchEvents(currentPage);
-  }, [currentPage, fetchEvents]);
-
-  const columns: ColumnDef<Event>[] = [
+  const columns: ColumnDef<Category>[] = [
     {
-      accessorKey: "title",
-      header: "Título",
+      accessorKey: "name",
+      header: "Nombre",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("title")}</div>
+        <div className="capitalize">{row.getValue("name")}</div>
       ),
     },
     {
@@ -111,56 +96,39 @@ export default function EventsTable() {
       header: "Descripción",
     },
     {
-      accessorKey: "date_time",
-      header: "Fecha y Hora",
-      cell: ({ row }) => {
-        const date = new Date(row.getValue("date_time"));
-        return <div>{date.toLocaleString()}</div>;
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Estado",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("status")}</div>
-      ),
-    },
-    {
-      accessorKey: "organizer",
-      header: "Organizador",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("organizer")}</div>
-      ),
-    },
-    {
-      accessorKey: "organization",
-      header: "Organización",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("organization")}</div>
-      ),
-    },
-    {
-      accessorKey: "state",
+      accessorKey: "is_active",
       header: "Activo",
-      cell: ({ row }) => <div>{row.getValue("state") ? "Sí" : "No"}</div>,
+      cell: ({ row }) => <div>{row.getValue("is_active") ? "Sí" : "No"}</div>,
     },
     {
       id: "actions",
       header: "Acciones",
       cell: ({ row }) => {
-        const event = row.original;
+        const category = row.original;
         return (
           <div className="flex space-x-2">
             <Link
-              href={`/admin/events/${event.event_id}`}
+              href={`/admin/categories/${category.category_id}`}
               className="text-blue-500 hover:text-blue-700"
             >
-              <Calendar className="h-5 w-5 " />
+              <FileText className="h-5 w-5" />
             </Link>
-            <ToggleEventStatusButton
-              event={event}
-              onToggle={handleEventUpdated}
-            />
+            <Link
+              href={`/admin/categories/edit/${category.category_id}`}
+              className="text-yellow-500 hover:text-yellow-700"
+            >
+              <Pencil className="h-5 w-5" />
+            </Link>
+            <button
+              onClick={() => handleToggleStatus(category)}
+              className="text-green-500 hover:text-green-700"
+            >
+              {category.is_active ? (
+                <ToggleRight className="h-5 w-5" />
+              ) : (
+                <ToggleLeft className="h-5 w-5 text-red-500" />
+              )}
+            </button>
           </div>
         );
       },
@@ -168,7 +136,7 @@ export default function EventsTable() {
   ];
 
   const table = useReactTable({
-    data: events,
+    data: categories,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -196,25 +164,43 @@ export default function EventsTable() {
     table.setPageIndex(currentPage - 1);
   }, [currentPage, table]);
 
+  const handleEdit = (category: Category) => {
+    // Implementar lógica para editar categoría
+    console.log("Editar categoría:", category);
+  };
+
+  const handleToggleStatus = async (category: Category) => {
+    try {
+      await axios.patch(
+        `http://localhost:4000/api/categories/${category.category_id}`,
+        null,
+        { withCredentials: true },
+      );
+      handleCategoryUpdated();
+    } catch (error) {
+      console.error("Error toggling category status:", error);
+      }
+    };
+
   return (
     <div className="container mx-auto py-10">
       <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Eventos Registrados</h1>
+        <h1 className="text-2xl font-bold">Categorías Registradas</h1>
         <Link
-          href={"/admin/events/create"}
+          href={"/admin/categories/create"}
           className="rounded-lg bg-gray-900 p-3 text-white"
         >
-          Crear Evento
+          Crear Categoría
         </Link>
       </div>
 
       <div className="mb-4 flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">
           <Input
-            placeholder="Buscar Título..."
-            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+            placeholder="Buscar Nombre..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("title")?.setFilterValue(event.target.value)
+              table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="h-10 w-[150px] rounded-md border !border-white p-2 lg:w-[250px]"
           />
@@ -288,7 +274,7 @@ export default function EventsTable() {
                   colSpan={table.getAllColumns().length}
                   className="text-center"
                 >
-                  No hay eventos registrados
+                  No hay categorías registradas
                 </TableCell>
               </TableRow>
             )}

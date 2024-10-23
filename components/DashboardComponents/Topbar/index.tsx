@@ -13,7 +13,6 @@ import {
 import ThemeToggler from "./ThemeToggler";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser } from "@/app/context/UserContext";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import {
@@ -40,24 +39,20 @@ import {
   organizationSidebarData,
   volunteerSidebarData,
 } from "../Sidebar/sidebarData";
+import axios from "axios";
 
 const Topbar = () => {
   const user = useUser();
-  const userInitials = user ? `${user.name[0] + user.surname[0]}` : "NaN";
+  const userInitials = user ? `${user.firstname[0] + user.surname[0]}` : "NaN";
   const router = useRouter();
   const pathname = usePathname(); // Ruta actual
 
   const handleLogout = async () => {
     try {
-      // Eliminar el token del localStorage
-      localStorage.removeItem("token");
 
-      // Opcional: Realizar una solicitud para invalidar el token en el servidor si es necesario
-      // await axios.post("http://localhost:1337/api/auth/logout", {}, {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
+      await axios.post("http://localhost:4000/api/auth/logout", null, {
+        withCredentials: true
+      })
 
       // Redirigir al usuario a la página de inicio de sesión
       router.push("/auth/signin");
@@ -83,7 +78,7 @@ const Topbar = () => {
 
   return (
     <>
-      <header className="m flex max-h-[60px] w-full items-center justify-between bg-transparent px-4 lg:max-h-[80px] xl:px-8">
+      <header className="m flex h-[60px] w-full items-center justify-between bg-transparent px-4 lg:h-[70px] xl:px-8 shadow-lg">  
         <div className="block lg:hidden">
           <Sheet>
             <SheetTrigger>
@@ -196,7 +191,7 @@ const Topbar = () => {
               <div className="flex gap-2 rounded-lg bg-neutral-200 p-2 dark:bg-gray-900">
                 <div className="flex flex-col text-end">
                   <h3 className="lg:text-md text-sm font-bold">
-                    {user?.name} {user?.surname}
+                    {user?.firstname} {user?.surname}
                   </h3>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400">
                     {user?.role_name}
@@ -204,7 +199,7 @@ const Topbar = () => {
                 </div>
                 <Avatar>
                   <AvatarFallback>{userInitials}</AvatarFallback>
-                  <AvatarImage src={user?.profile_photo} />
+                  <AvatarImage src={user?.avatar} />
                 </Avatar>
               </div>
             </DropdownMenuTrigger>
