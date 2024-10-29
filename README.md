@@ -4,8 +4,8 @@ Unete a al cambio de Bogotá, una ecoacción a la vez.
 
 # Requisitos previos
 
-- Node.js (versión 14 o superior)
-- npm (versión 6 o superior)
+- Node.js >= 20.18
+- npm >= 10.8
 
 # Set up
 
