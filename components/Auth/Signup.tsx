@@ -36,14 +36,14 @@ const Signup = () => {
     passwordConfirm: Yup.string()
       .oneOf([Yup.ref("pass")], "Las contraseñas no coinciden")
       .required("Este campo es requerido"),
-    profile_photo: Yup.mixed().required("Por favor, sube una imagen"),
+    avatar: Yup.mixed().required("Por favor, sube una imagen"),
   });
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       const formData = new FormData();
       Object.keys(values).forEach((key) => {
-        if (key === "profile_photo") {
+        if (key === "avatar") {
           formData.append(key, values[key]);
         } else {
           formData.append(key, values[key].toString());
@@ -92,7 +92,7 @@ const Signup = () => {
 
       reader.onloadend = () => {
         setImagePreview(reader.result);
-        setFieldValue("profile_photo", file);
+        setFieldValue("avatar", file);
       };
 
       reader.readAsDataURL(file);
@@ -158,7 +158,7 @@ const Signup = () => {
                 phone_number: "",
                 pass: "",
                 passwordConfirm: "",
-                profile_photo: null,
+                avatar: null,
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
@@ -351,7 +351,7 @@ const Signup = () => {
                         </>
                       )}
                       <input
-                        name="profile_photo"
+                        name="avatar"
                         type="file"
                         accept="image/*"
                         onChange={(event) =>
@@ -362,7 +362,7 @@ const Signup = () => {
                       />
                     </div>
                     <ErrorMessage
-                      name="profile_photo"
+                      name="avatar"
                       component="div"
                       className="text-sm text-red-500"
                     />

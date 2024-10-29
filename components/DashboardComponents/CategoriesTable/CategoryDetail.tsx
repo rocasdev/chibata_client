@@ -43,15 +43,16 @@ const CategoryDetails = ({ id }) => {
   if (!category) return <div>No se encontró la categoría</div>;
 
   return (
-    <section className="bg-gray-50 py-10 dark:bg-gray-900">
-      <div className="container mx-auto px-4">
+    <section className="flex w-full">
+      <div className="container mx-auto max-w-[1000px] rounded-md bg-gray-50 px-4 py-10 dark:bg-gray-900">
         <div className="p-6">
-          <h1 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
-            {category.name}
+          <h1 className="mb-4 text-3xl text-gray-900 dark:text-white">
+            <b className="font-bold">Nombre de la categoría:</b> {category.name}
           </h1>
-
+          <hr className="mb-4" />
           <div className="mb-6 flex flex-wrap gap-4">
-            <span className="flex items-center text-gray-600 dark:text-gray-300">
+            <span className="flex items-center text-2xl text-gray-600 dark:text-gray-300">
+              <b>Estado: </b>
               {category.is_active ? (
                 <CheckCircleIcon size={20} className="mr-2 text-green-500" />
               ) : (
@@ -60,8 +61,9 @@ const CategoryDetails = ({ id }) => {
               {category.is_active ? "Activa" : "Inactiva"}
             </span>
           </div>
-
-          <p className="mb-6 text-gray-700 dark:text-gray-300">
+          
+          <h3 className="font-bold text-xl mb-2">Descripcion: </h3>
+          <p className="mb-6 text-gray-700 dark:text-gray-300 text-lg p-4">
             {category.description}
           </p>
 

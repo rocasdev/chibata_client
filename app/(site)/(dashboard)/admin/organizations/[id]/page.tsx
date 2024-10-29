@@ -1,4 +1,4 @@
-import EventDetails from "@/components/DashboardComponents/EventsTable/EventDetails";
+import OrganizationDetails from "@/components/DashboardComponents/OrganizationsTable/OrganizationDetail";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export default async function EventsPage({ params }) {
   const { id } = await params;
   return (
     <div>
-      <EventDetails id={id} />
+      <OrganizationDetails id={id} />
     </div>
   );
 }

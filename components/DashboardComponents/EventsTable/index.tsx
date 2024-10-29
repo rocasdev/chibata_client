@@ -37,6 +37,7 @@ import {
   FileText,
   Pencil,
   Calendar,
+  PencilIcon,
 } from "lucide-react";
 import { ToggleEventStatusButton } from "./ToggleEventStatusButton";
 import Link from "next/link";
@@ -52,11 +53,19 @@ export type Event = {
   longitude: number;
   banner: string;
   status: "Programado" | "En Progreso" | "Finalizado" | "Cancelado";
-  state: boolean;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
-  organizer: string;
-  organization: string;
+  category_id: string;
+  organizer_id: string;
+  organization_id: string;
+  User: {
+    firstname: string;
+    surname: string;
+  };
+  Organization: {
+    name: string;
+  };
 };
 
 export default function EventsTable() {
@@ -129,20 +138,22 @@ export default function EventsTable() {
       accessorKey: "organizer",
       header: "Organizador",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("organizer")}</div>
+        <div className="capitalize">
+          {row.original.User.firstname + " " + row.original.User.surname}
+        </div>
       ),
     },
     {
       accessorKey: "organization",
       header: "Organización",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("organization")}</div>
+        <div className="capitalize">{row.original.Organization.name}</div>
       ),
     },
     {
-      accessorKey: "state",
+      accessorKey: "is_active",
       header: "Activo",
-      cell: ({ row }) => <div>{row.getValue("state") ? "Sí" : "No"}</div>,
+      cell: ({ row }) => <div>{row.getValue("is_active") ? "Sí" : "No"}</div>,
     },
     {
       id: "actions",
@@ -161,6 +172,12 @@ export default function EventsTable() {
               event={event}
               onToggle={handleEventUpdated}
             />
+            <Link
+              href={`/admin/events/edit/${event.event_id}`}
+              className="text-yellow-500 hover:text-yellow-700"
+            >
+              <PencilIcon className="h-5 w-5 " />
+            </Link>
           </div>
         );
       },

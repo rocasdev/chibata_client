@@ -68,13 +68,6 @@ const volunteerSidebarData: Sidebar[] = [
     role: "volunteer",
     icon: BookUser,
   },
-  {
-    id: 4,
-    name: "Categorias",
-    path: "/volunteer/categories",
-    role: "volunteer",
-    icon: Tag,
-  },
 ];
 
 const organizationSidebarData: Sidebar[] = [

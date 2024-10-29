@@ -5,16 +5,11 @@ export const metadata: Metadata = {
   title: "Detalle Usuario",
 };
 
-export default function UserDetailPage({
-  params,
-}: {
-  params: {
-    id: string;
-  };
-}) {
+export default async function UserDetailPage({ params }) {
+  const { id } = await params;
   return (
     <div>
-      <UserDetails id={params.id} />
+      <UserDetails id={id} />
     </div>
   );
 }

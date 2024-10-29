@@ -36,6 +36,7 @@ import {
   ArrowBigRight,
   FileText,
   Pencil,
+  Eye,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -145,12 +146,12 @@ export default function OrganizationsTable() {
       cell: ({ row }) => {
         const organization = row.original;
         return (
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 justify-center">
             <Link
               href={`/admin/organizations/${organization.organization_id}`}
               className="text-blue-500 hover:text-blue-700"
             >
-              <Pencil className="h-5 w-5 " />
+              <Eye className="h-5 w-5 " />
             </Link>
             {/* Add more action buttons if needed */}
           </div>

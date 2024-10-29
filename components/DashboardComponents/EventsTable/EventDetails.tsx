@@ -1,9 +1,20 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { MapPinIcon, CalendarIcon, UserIcon, BuildingIcon } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { toast } from "react-hot-toast";
 import Map, { Marker } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
@@ -25,14 +36,20 @@ type Event = {
   state: boolean;
   created_at: string;
   updated_at: string;
-  organizer: string;
-  organization: string;
+  User: {
+    firstname: string;
+    surname: string;
+  };
+  Organization: {
+    name: string;
+  };
 };
 
-const EventDetails = ({ id }) => {
+const EventDetails = ({ id }: { id: number }) => {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<String | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -44,7 +61,6 @@ const EventDetails = ({ id }) => {
           },
         );
         setEvent(response.data.event);
-        
       } catch (err) {
         setError("Error al cargar el evento");
         console.error("Error fetching event:", err);
@@ -54,7 +70,6 @@ const EventDetails = ({ id }) => {
     };
 
     fetchEvent();
-    console.log(event);
   }, [id]);
 
   const formatDate = (dateString: string) => {
@@ -66,6 +81,23 @@ const EventDetails = ({ id }) => {
       minute: "2-digit",
     };
     return new Date(dateString).toLocaleDateString("es-ES", options);
+  };
+
+  const handleRegister = async () => {
+    try {
+      await axios.post(
+        `http://localhost:4000/api/events/enroll/${id}`,
+        {},
+        { withCredentials: true },
+      );
+      toast.success(
+        "Registro exitoso",
+      );
+      setIsDialogOpen(false);
+    } catch (err) {
+      console.error("Error registering for event:", err);
+      toast.error("Error al registrarse. Inténtalo de nuevo.");
+    }
   };
 
   if (loading) return <div>Cargando...</div>;
@@ -112,7 +144,7 @@ const EventDetails = ({ id }) => {
                 </h3>
               </CardHeader>
               <CardContent>
-                <p>{event.organizer}</p>
+                <p>{event.User?.firstname + " " + event.User?.surname}</p>
               </CardContent>
             </Card>
 
@@ -123,12 +155,11 @@ const EventDetails = ({ id }) => {
                 </h3>
               </CardHeader>
               <CardContent>
-                <p>{event.organization}</p>
+                <p>{event.Organization?.name}</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Map Section */}
           <div className="mb-6">
             <h3 className="mb-2 text-lg font-semibold">Ubicación del evento</h3>
             <div className="h-[400px] w-full overflow-hidden rounded-lg">
@@ -152,9 +183,30 @@ const EventDetails = ({ id }) => {
           </div>
 
           <div className="flex justify-center">
-            <Button className="rounded bg-green-600 px-4 py-2 font-bold text-white hover:bg-green-700">
-              Registrarse para el evento
-            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-green-600 hover:bg-green-700">
+                  Registrarse para el evento
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Confirmar registro</DialogTitle>
+                  <DialogDescription>
+                    ¿Estás seguro de que deseas registrarte para este evento?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button onClick={handleRegister}>Confirmar registro</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

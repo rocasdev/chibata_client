@@ -116,11 +116,11 @@ export default function UsersTable() {
     },
     {
       id: "actions",
-      header: "Acciones",
+      header: "Ver",
       cell: ({ row }) => {
         const user = row.original;
         return (
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 justify-center">
             <Link href={`/admin/users/${user.user_id}`}>
               <UserCircle2Icon className="text-blue-500" />
             </Link>

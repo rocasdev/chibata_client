@@ -5,7 +5,7 @@ import axios from "axios";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { ImageUp, MapPin, Search } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -13,18 +13,21 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import Map, { Marker, MapRef } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
 
-const MAPBOX_TOKEN = "pk.eyJ1Ijoicm9jYXNkZXYiLCJhIjoiY20yNGZpNjMyMGc3aTJrcHZsaHoxdXF0NSJ9.HXBo42kG3TCq171NnIWPhA";
+const MAPBOX_TOKEN =
+  "pk.eyJ1Ijoicm9jYXNkZXYiLCJhIjoiY20yNGZpNjMyMGc3aTJrcHZsaHoxdXF0NSJ9.HXBo42kG3TCq171NnIWPhA";
 
 interface SearchResult {
   place_name: string;
   center: [number, number];
 }
 
-const CreateEvent = () => {
+const OrganizerCreateEvent = () => {
   const router = useRouter();
-  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(
+    null,
+  );
   const [viewport, setViewport] = useState({
     latitude: 4.710989,
     longitude: -74.07209,
@@ -33,6 +36,26 @@ const CreateEvent = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const mapRef = useRef<MapRef | null>(null);
+  const [categories, setCategories] = useState<any>([]);
+  const [users, setUsers] = useState<any>([]);
+  const [organizations, setOrganizations] = useState<any>([]);
+  const [selectedUser, setSelectedUser] = useState<string>("");
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/api/categories", {
+        withCredentials: true,
+      });
+      setCategories(response.data.categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Error al cargar categorías");
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const searchPlaces = useCallback(
     debounce(async (query: string, setFieldValue: Function) => {
@@ -44,38 +67,43 @@ const CreateEvent = () => {
       try {
         const response = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-            query
-          )}.json?access_token=${MAPBOX_TOKEN}&limit=5`
+            query,
+          )}.json?access_token=${MAPBOX_TOKEN}&limit=5`,
         );
         const data = await response.json();
-        setSearchResults(data.features.map((feature: any) => ({
-          place_name: feature.place_name,
-          center: feature.center,
-        })));
+        setSearchResults(
+          data.features.map((feature: any) => ({
+            place_name: feature.place_name,
+            center: feature.center,
+          })),
+        );
       } catch (error) {
-        console.error('Error searching places:', error);
-        toast.error('Error al buscar lugares');
+        console.error("Error searching places:", error);
+        toast.error("Error al buscar lugares");
       } finally {
         setIsSearching(false);
       }
     }, 300),
-    []
+    [],
   );
 
-  const handleSearchSelect = (result: SearchResult, setFieldValue: Function) => {
+  const handleSearchSelect = (
+    result: SearchResult,
+    setFieldValue: Function,
+  ) => {
     const [longitude, latitude] = result.center;
-    
-    setFieldValue('longitude', longitude.toFixed(6));
-    setFieldValue('latitude', latitude.toFixed(6));
-    setFieldValue('address', result.place_name);
-    
+
+    setFieldValue("longitude", longitude.toFixed(6));
+    setFieldValue("latitude", latitude.toFixed(6));
+    setFieldValue("address", result.place_name);
+
     // Centrar el mapa en la ubicación seleccionada
     mapRef.current?.flyTo({
       center: [longitude, latitude],
       zoom: 14,
-      duration: 2000
+      duration: 2000,
     });
-    
+
     setSearchResults([]);
   };
 
@@ -85,7 +113,10 @@ const CreateEvent = () => {
     date_time: Yup.date().required("La fecha y hora son requeridas"),
     address: Yup.string().required("La dirección es requerida"),
     latitude: Yup.number().required("La latitud es requerida").min(-90).max(90),
-    longitude: Yup.number().required("La longitud es requerida").min(-180).max(180),
+    longitude: Yup.number()
+      .required("La longitud es requerida")
+      .min(-180)
+      .max(180),
     category_id: Yup.string().required("La categoría es requerida"),
     status: Yup.string().required("El estado es requerido"),
     banner: Yup.mixed().required("Por favor, sube una imagen para el banner"),
@@ -97,7 +128,7 @@ const CreateEvent = () => {
     setFieldValue("latitude", lat.toFixed(6));
 
     fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`,
     )
       .then((response) => response.json())
       .then((data) => {
@@ -119,12 +150,16 @@ const CreateEvent = () => {
       });
 
       await toast.promise(
-        axios.post("http://localhost:4000/api/events", formData, {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
+        axios.post(
+          "http://localhost:4000/api/organizer/create-event",
+          formData,
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           },
-        }),
+        ),
         {
           loading: "Creando evento",
           success: (response) => {
@@ -137,7 +172,7 @@ const CreateEvent = () => {
             console.error("Error al crear el evento:", error);
             return "Error al crear el evento";
           },
-        }
+        },
       );
     } catch (error) {
       console.error("Error durante la creación del evento:", error);
@@ -149,7 +184,7 @@ const CreateEvent = () => {
 
   const handleImageChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue
+    setFieldValue,
   ) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
@@ -211,16 +246,18 @@ const CreateEvent = () => {
                     <Label htmlFor="title">Título del Evento</Label>
                     <Field
                       as={Input}
+                      type="text"
                       id="title"
                       name="title"
-                      type="text"
-                      placeholder="Ej. Limpieza de playa"
-                      className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                      placeholder="Título del evento"
+                      className={
+                        touched.title && errors.title ? "border-red-600" : ""
+                      }
                     />
                     <ErrorMessage
                       name="title"
                       component="div"
-                      className="text-sm text-red-500"
+                      className="text-red-600"
                     />
                   </div>
 
@@ -228,20 +265,24 @@ const CreateEvent = () => {
                     <Label htmlFor="date_time">Fecha y Hora</Label>
                     <Field
                       as={Input}
+                      type="datetime-local"
                       id="date_time"
                       name="date_time"
-                      type="datetime-local"
-                      className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                      className={
+                        touched.date_time && errors.date_time
+                          ? "border-red-600"
+                          : ""
+                      }
                     />
                     <ErrorMessage
                       name="date_time"
                       component="div"
-                      className="text-sm text-red-500"
+                      className="text-red-600"
                     />
                   </div>
                 </div>
 
-                {/* Descripción */}
+                {/* Campo de descripción */}
                 <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5">
                   <div className="w-full">
                     <Label htmlFor="description">Descripción</Label>
@@ -261,7 +302,6 @@ const CreateEvent = () => {
                   </div>
                 </div>
 
-                {/* Categoría */}
                 <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5">
                   <div className="w-full">
                     <Label htmlFor="category_id">Categoría</Label>
@@ -271,11 +311,19 @@ const CreateEvent = () => {
                       name="category_id"
                       className="w-full rounded-lg border border-stroke bg-transparent p-4 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
                     >
-                      <option value="" className="text-black">Seleccionar categoría...</option>
-                      <option value="6fc756f3-87a3-11ef-b43c-9828a628449a" className="text-black">Ecoturismo</option>
-                      <option value="6fc75b3b-87a3-11ef-b43c-9828a628449a" className="text-black">Educacion</option>
-                      <option value="6fc74f80-87a3-11ef-b43c-9828a628449a" className="text-black">Limpieza</option>
-                      <option value="6fc73249-87a3-11ef-b43c-9828a628449a" className="text-black">Reforestacion</option>
+                      <option value="" className="text-black">
+                        Seleccionar categoría...
+                      </option>
+                      {Array.isArray(categories) &&
+                        categories.map((category) => (
+                          <option
+                            key={category.category_id}
+                            value={category.category_id}
+                            className="text-black"
+                          >
+                            {category.name}
+                          </option>
+                        ))}
                     </Field>
                     <ErrorMessage
                       name="category_id"
@@ -288,7 +336,7 @@ const CreateEvent = () => {
                 {/* Sección del mapa con buscador */}
                 <div className="mb-7.5 w-full lg:mb-12.5">
                   <Label>Ubicación del evento</Label>
-                  
+
                   {/* Buscador de lugares */}
                   <div className="relative mb-4">
                     <div className="relative">
@@ -303,7 +351,7 @@ const CreateEvent = () => {
                         }}
                       />
                     </div>
-                    
+
                     {/* Resultados de búsqueda */}
                     {searchResults.length > 0 && (
                       <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg dark:bg-gray-800">
@@ -312,7 +360,9 @@ const CreateEvent = () => {
                             <li
                               key={index}
                               className="cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                              onClick={() => handleSearchSelect(result, setFieldValue)}
+                              onClick={() =>
+                                handleSearchSelect(result, setFieldValue)
+                              }
                             >
                               {result.place_name}
                             </li>
@@ -381,6 +431,7 @@ const CreateEvent = () => {
                   </div>
                 </div>
 
+                {/* Campo de banner */}
                 <div className="mb-7.5 flex w-full flex-col items-center justify-center gap-2 lg:mb-12.5 lg:gap-4">
                   <Label htmlFor="bannerInput">Banner del Evento</Label>
                   <div
@@ -421,13 +472,16 @@ const CreateEvent = () => {
                   />
                 </div>
 
+                {/* Botón de enviar */}
                 <div className="mb-4 flex items-center justify-between">
                   <Link href="/admin/events" className="hover:text-green-600">
                     Volver
                   </Link>
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={
+                      isSubmitting
+                    }
                     className="inline-flex items-center gap-2.5 rounded-full bg-green-800 px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho disabled:opacity-50 dark:bg-green-700 dark:hover:bg-blackho"
                   >
                     {isSubmitting ? "Creando..." : "Crear Evento"}
@@ -455,4 +509,4 @@ const CreateEvent = () => {
   );
 };
 
-export default CreateEvent;
+export default OrganizerCreateEvent;

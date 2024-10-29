@@ -1,62 +1,58 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  Globe,
+  Users,
+  Calendar,
+} from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
 
-interface User {
-  user_id: string;
-  firstname: string;
-  surname: string;
-  avatar: string;
-  email: string;
-  doc_type: string;
-  doc_num: string;
-  phone_number: string;
+interface Organization {
+  id: string;
+  name: string;
+  nit: string;
+  address: string;
+  founding_date: string;
+  contact_number: string;
   is_active: boolean;
-  Role: {
-    name: string;
-  };
+  logo: string;
+  website?: string;
 }
 
-const UserDetails = ({ id }: { id: string }) => {
-  const [user, setUser] = useState<User | null>(null);
+export default function MyOrganization() {
+  const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchOrganization = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/users/${id}`,
+          `http://localhost:4000/api/organizer/myorg`,
           {
             withCredentials: true,
           },
         );
-        setUser(response.data.user);
+        setOrganization(response.data.organization);
       } catch (err) {
-        setError("Error al cargar el usuario");
-        console.error("Error fetching user:", err);
+        setError("Error al cargar la organización");
+        console.error("Error fetching organization:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
-  }, [id]);
-
-  const getDocumentTypeLabel = (docType: string) => {
-    const types = {
-      CC: "Cédula de Ciudadanía",
-      CE: "Cédula de Extranjería",
-      PA: "Pasaporte",
-    };
-    return types[docType] || docType;
-  };
+    fetchOrganization();
+  }, []);
 
   if (loading) {
     return (
@@ -74,10 +70,10 @@ const UserDetails = ({ id }: { id: string }) => {
     );
   }
 
-  if (!user) {
+  if (!organization) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="text-xl">No se encontró el usuario</div>
+        <div className="text-xl">No se encontró la organización</div>
       </div>
     );
   }
@@ -86,14 +82,14 @@ const UserDetails = ({ id }: { id: string }) => {
     <section>
       <div className="relative z-1 mx-auto max-w-c-1016 px-7.5 pb-7.5 pt-10 lg:px-15 lg:pt-15 xl:px-20 xl:pt-20">
         <div className="mb-6 flex items-center gap-4">
-          <Link href="/admin/users">
+          <Link href="/organizer">
             <Button variant="ghost" className="flex items-center gap-2">
               <ArrowLeft size={20} />
-              Volver
+              Volver al Dashboard
             </Button>
           </Link>
           <h1 className="text-2xl font-bold text-black dark:text-white">
-            Detalles del Usuario
+            Mi Organización
           </h1>
         </div>
 
@@ -110,10 +106,12 @@ const UserDetails = ({ id }: { id: string }) => {
         >
           <div className="flex flex-col items-center justify-between gap-4 border-b border-stroke pb-8 dark:border-strokedark lg:flex-row">
             <div className="flex items-center gap-4">
-              <div className="relative h-24 w-24 overflow-hidden rounded-full lg:h-32 lg:w-32">
+              <div className="relative h-24 w-24 overflow-hidden rounded-lg lg:h-32 lg:w-32">
                 <Image
-                  src={user.avatar || "/images/placeholder-avatar.jpg"}
-                  alt="Profile photo"
+                  src={
+                    organization.logo || "/images/placeholder-organization.jpg"
+                  }
+                  alt="Organization logo"
                   fill
                   className="object-cover"
                 />
@@ -121,53 +119,84 @@ const UserDetails = ({ id }: { id: string }) => {
               <div>
                 <div className="flex items-center gap-3">
                   <h2 className="text-2xl font-semibold text-black dark:text-white lg:text-3xl">
-                    {user.firstname} {user.surname}
+                    {organization.name}
                   </h2>
-                  {user.is_active ? (
+                  {organization.is_active ? (
                     <CheckCircle className="text-green-500" size={24} />
                   ) : (
                     <XCircle className="text-red-500" size={24} />
                   )}
                 </div>
                 <p className="text-body-color dark:text-body-color-dark mt-1">
-                  {user.email}
+                  NIT: {organization.nit}
                 </p>
-                <p className="text-body-color dark:text-body-color-dark mt-1">
-                  Rol: {user.Role.name}
-                </p>
+                {organization.website && (
+                  <a
+                    href={organization.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
+                    <Globe size={16} />
+                    Sitio web
+                  </a>
+                )}
               </div>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Link href={`/organizer/members/${organization.id}`}>
+                <Button className="w-full sm:w-auto">
+                  <Users className="mr-2 h-4 w-4" />
+                  Gestionar Miembros
+                </Button>
+              </Link>
+              <Link href={`/organizer/events/${organization.id}`}>
+                <Button className="w-full sm:w-auto">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Gestionar Eventos
+                </Button>
+              </Link>
             </div>
           </div>
 
           <div className="mt-8 grid gap-8">
-            <Card className="border-stroke bg-transparent dark:border-strokedark mb-4">
+            <Card className="mb-5 border-stroke bg-transparent dark:border-strokedark">
               <CardHeader className="border-b border-stroke pb-4 dark:border-strokedark">
                 <h3 className="text-xl font-semibold text-black dark:text-white">
-                  Información Personal
+                  Información de la Organización
                 </h3>
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <div>
                     <p className="text-body-color dark:text-body-color-dark mb-1 text-sm">
-                      Tipo de Documento
+                      Dirección
                     </p>
                     <p className="text-black dark:text-white">
-                      {getDocumentTypeLabel(user.doc_type)}
+                      {organization.address}
                     </p>
                   </div>
                   <div>
                     <p className="text-body-color dark:text-body-color-dark mb-1 text-sm">
-                      Número de Documento
+                      Fecha de Fundación
                     </p>
-                    <p className="text-black dark:text-white">{user.doc_num}</p>
+                    <p className="text-black dark:text-white">
+                      {new Date(organization.founding_date).toLocaleDateString(
+                        "es-CO",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        },
+                      )}
+                    </p>
                   </div>
                   <div>
                     <p className="text-body-color dark:text-body-color-dark mb-1 text-sm">
-                      Teléfono
+                      Número de Contacto
                     </p>
                     <p className="text-black dark:text-white">
-                      +57 {user.phone_number}
+                      +57 {organization.contact_number}
                     </p>
                   </div>
                   <div>
@@ -175,15 +204,15 @@ const UserDetails = ({ id }: { id: string }) => {
                       Estado
                     </p>
                     <p className="flex items-center gap-2 text-black dark:text-white">
-                      {user.is_active ? (
+                      {organization.is_active ? (
                         <>
                           <CheckCircle className="text-green-500" size={16} />
-                          Activo
+                          Activa
                         </>
                       ) : (
                         <>
                           <XCircle className="text-red-500" size={16} />
-                          Inactivo
+                          Inactiva
                         </>
                       )}
                     </p>
@@ -196,6 +225,4 @@ const UserDetails = ({ id }: { id: string }) => {
       </div>
     </section>
   );
-};
-
-export default UserDetails;
+}

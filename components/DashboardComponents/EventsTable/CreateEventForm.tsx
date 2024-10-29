@@ -154,6 +154,7 @@ const CreateEvent = () => {
       .min(-180)
       .max(180),
     category_id: Yup.string().required("La categoría es requerida"),
+    organizer_id: Yup.string().required("El organizador es requerido"), // Nuevo campo de validación
     organization_id: Yup.string().required("La organización es requerida"), // Nuevo campo de validación
     status: Yup.string().required("El estado es requerido"),
     banner: Yup.mixed().required("Por favor, sube una imagen para el banner"),
@@ -265,6 +266,7 @@ const CreateEvent = () => {
               latitude: viewport.latitude,
               longitude: viewport.longitude,
               category_id: "",
+              organizer_id: "", // Nuevo campo en el formulario
               organization_id: "", // Nuevo campo en el formulario
               status: "Programado",
               banner: null,
@@ -370,15 +372,15 @@ const CreateEvent = () => {
                 {/* Campo de selección de usuario */}
                 <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5">
                   <div className="w-full">
-                    <Label htmlFor="user_id">Usuario</Label>
+                    <Label htmlFor="organizer_id">Usuario</Label>
                     <Field
                       as="select"
-                      id="user_id"
-                      name="user_id"
+                      id="organizer_id"
+                      name="organizer_id"
                       className="w-full rounded-lg border border-stroke bg-transparent p-4 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
                       onChange={(e) => {
                         handleUserChange(e);
-                        setFieldValue("user_id", e.target.value);
+                        setFieldValue("organizer_id", e.target.value);
                         setFieldValue("organization_id", ""); // Reset organization when user changes
                       }}
                     >

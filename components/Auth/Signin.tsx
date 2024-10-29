@@ -6,12 +6,14 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
 const Signin = () => {
+
+  const router = useRouter();
 
   const initialValues = {
     email: "",
@@ -34,7 +36,7 @@ const Signin = () => {
       const user = response.data.user;
       let rolePath = user.role_path;
 
-      redirect(rolePath);
+      router.push(rolePath);
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       throw error;

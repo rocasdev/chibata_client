@@ -1,4 +1,4 @@
-import EditCategoryForm from "@/components/DashboardComponents/CategoriesTable/EditCategoryForm";
+import EditEventForm from "@/components/DashboardComponents/EventsTable/EditEventForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export default async function CategoryDetailPage({ params }) {
   const { id } = await params;
   return (
     <div>
-      <EditCategoryForm categoryId={id} />
+      <EditEventForm id={id} />
     </div>
   );
 }

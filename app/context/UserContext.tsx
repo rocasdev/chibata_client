@@ -35,7 +35,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         const userData: User = await getUserData();
 
         if (!userData || !userData.user_id) {
-          throw new Error("User not found");
+          throw new Error("User not signed in. Redirecting to signin page.");
         }
 
         setUser(userData);
@@ -44,8 +44,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           router.push(userData.role_path);
         }
       } catch (error) {
-        console.error("Error fetching user:", error.message);
         if (typeof window !== "undefined") {
+          toast("Inicia sesión para acceder a esta ruta.", { icon: "⚠️​" });
           router.push("/auth/signin");
         }
       }
@@ -125,10 +125,9 @@ const getUserData = async (): Promise<User> => {
         role_path: data.Role.path,
       };
     } else {
-      throw new Error("Data is empty or invalid");
+      throw new Error("No data received from API, signin to try it again");
     }
   } catch (error) {
-    console.error("Error fetching data from API:", error);
-    throw error;
+    throw error.message;
   }
 };
