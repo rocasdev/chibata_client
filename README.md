@@ -2,6 +2,11 @@
 
 Unete a al cambio de Bogotá, una ecoacción a la vez.
 
+# Requisitos previos
+
+- Node.js (versión 14 o superior)
+- npm (versión 6 o superior)
+
 # Set up
 
 Copia el repositorio en en tu maquina local: [chibata_client](https://github.com/rocasdev/chibata_client.git). y posteriormente ejecuta el siguiente comando en la terminal:
