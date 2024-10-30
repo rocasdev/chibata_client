@@ -80,7 +80,7 @@ export default function EventsTable() {
   const fetchEvents = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app//api/events?page=${page}`,
+        `https://chibataserver-production.up.railway.app/api/events?page=${page}`,
         { withCredentials: true },
       );
       const events = response.data.events;

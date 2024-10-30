@@ -40,7 +40,7 @@ const ResetPassword = () => {
       try {
         // Validar el token con el backend
         const response = await axios.post(
-          "https://chibataserver-production.up.railway.app//api/auth/verify-token",
+          "https://chibataserver-production.up.railway.app/api/auth/verify-token",
           {
             token,
           },
@@ -67,7 +67,7 @@ const ResetPassword = () => {
 
     try {
       await toast.promise(
-        axios.post("https://chibataserver-production.up.railway.app//api/auth/reset-password", {
+        axios.post("https://chibataserver-production.up.railway.app/api/auth/reset-password", {
           token,
           password: values.pass,
         }),

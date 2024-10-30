@@ -106,9 +106,12 @@ export const useUser = () => {
 
 const getUserData = async (): Promise<User> => {
   try {
-    const res = await axios.get("http://localhost:4000/api/users/me", {
-      withCredentials: true
-    });
+    const res = await axios.get(
+      "https://chibataserver-production.up.railway.app/api/users/me",
+      {
+        withCredentials: true,
+      },
+    );
     if (res.data) {
       const data = res.data.user;
 

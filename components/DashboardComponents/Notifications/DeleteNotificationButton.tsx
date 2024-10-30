@@ -15,7 +15,7 @@ export function DeleteNotificationButton({
 
   const deleteNotification = async () => {
     try {
-      await axios.delete(`https://chibataserver-production.up.railway.app//api/dashboard/notifications/${notificationId}`, {withCredentials: true});
+      await axios.delete(`https://chibataserver-production.up.railway.app/api/dashboard/notifications/${notificationId}`, {withCredentials: true});
       console.log("Notification deleted");
       setOpen(false);
       if (onDelete) {

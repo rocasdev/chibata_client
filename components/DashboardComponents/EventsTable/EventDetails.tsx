@@ -55,7 +55,7 @@ const EventDetails = ({ id }: { id: number }) => {
     const fetchEvent = async () => {
       try {
         const response = await axios.get(
-          `https://chibataserver-production.up.railway.app//api/events/${id}`,
+          `https://chibataserver-production.up.railway.app/api/events/${id}`,
           {
             withCredentials: true,
           },
@@ -86,7 +86,7 @@ const EventDetails = ({ id }: { id: number }) => {
   const handleRegister = async () => {
     try {
       await axios.post(
-        `https://chibataserver-production.up.railway.app//api/events/enroll/${id}`,
+        `https://chibataserver-production.up.railway.app/api/events/enroll/${id}`,
         {},
         { withCredentials: true },
       );

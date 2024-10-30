@@ -17,7 +17,7 @@ export function ToggleUserStatusButton({
   const toggleUserStatus = async () => {
     try {
       const response = await axios.patch(
-        `https://chibataserver-production.up.railway.app//api/users/${user.user_id}/toggle-state`,
+        `https://chibataserver-production.up.railway.app/api/users/${user.user_id}/toggle-state`,
         {},
         { withCredentials: true }
       );

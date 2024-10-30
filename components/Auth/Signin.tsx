@@ -28,7 +28,7 @@ const Signin = () => {
   const signIn = async (values: { email: string; password: string }) => {
     try {
       const response = await axios.post(
-        "https://chibataserver-production.up.railway.app//api/auth/login", values, { withCredentials: true }
+        "https://chibataserver-production.up.railway.app/api/auth/login", values, { withCredentials: true }
       );
 
       console.log(response.data.user.role_path);

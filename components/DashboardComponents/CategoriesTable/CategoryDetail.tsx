@@ -21,7 +21,7 @@ const CategoryDetails = ({ id }) => {
     const fetchCategory = async () => {
       try {
         const response = await axios.get(
-          `https://chibataserver-production.up.railway.app//api/categories/${id}`,
+          `https://chibataserver-production.up.railway.app/api/categories/${id}`,
           {
             withCredentials: true,
           },

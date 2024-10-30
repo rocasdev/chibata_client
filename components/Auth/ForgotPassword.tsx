@@ -24,7 +24,7 @@ const ForgotPassword = () => {
 
   const onSubmit = async (values: { email: string }, { resetForm }: { resetForm: () => void }) => {
     try {
-      await axios.post("https://chibataserver-production.up.railway.app//api/auth/forgot-password", values);
+      await axios.post("https://chibataserver-production.up.railway.app/api/auth/forgot-password", values);
       toast.success("Correo para restablecer contraseña enviado.");
       resetForm();
     } catch (error) {

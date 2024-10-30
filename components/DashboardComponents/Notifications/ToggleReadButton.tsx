@@ -19,7 +19,7 @@ export function ToggleReadButton({
     try {
       // Actualiza el estado de la notificación en el servidor
       const response = await axios.patch(
-        `https://chibataserver-production.up.railway.app//api/notifications/${notification.notification_id}`, // Asegúrate de que esta URL sea correcta en tu servidor
+        `https://chibataserver-production.up.railway.app/api/notifications/${notification.notification_id}`, // Asegúrate de que esta URL sea correcta en tu servidor
         null,
         { withCredentials: true }
       );

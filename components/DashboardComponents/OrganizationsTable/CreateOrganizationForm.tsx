@@ -42,7 +42,7 @@ const CreateOrganization = () => {
       });
 
       await toast.promise(
-        axios.post("https://chibataserver-production.up.railway.app//api/organizations", formData, {
+        axios.post("https://chibataserver-production.up.railway.app/api/organizations", formData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",

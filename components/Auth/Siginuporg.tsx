@@ -71,7 +71,7 @@ const Signuporg = () => {
 
       await toast.promise(
         axios.post(
-          "https://chibataserver-production.up.railway.app//api/auth/register-organization",
+          "https://chibataserver-production.up.railway.app/api/auth/register-organization",
           formData,
           {
             headers: {

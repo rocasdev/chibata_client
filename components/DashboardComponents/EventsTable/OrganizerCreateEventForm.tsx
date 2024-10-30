@@ -44,7 +44,7 @@ const OrganizerCreateEvent = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://chibataserver-production.up.railway.app//api/categories", {
+      const response = await axios.get("https://chibataserver-production.up.railway.app/api/categories", {
         withCredentials: true,
       });
       setCategories(response.data.categories);
@@ -152,7 +152,7 @@ const OrganizerCreateEvent = () => {
 
       await toast.promise(
         axios.post(
-          "https://chibataserver-production.up.railway.app//api/organizer/create-event",
+          "https://chibataserver-production.up.railway.app/api/organizer/create-event",
           formData,
           {
             withCredentials: true,

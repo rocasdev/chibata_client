@@ -55,7 +55,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          `https://chibataserver-production.up.railway.app//api/events/${id}`,
+          `https://chibataserver-production.up.railway.app/api/events/${id}`,
           {
             withCredentials: true,
           },
@@ -79,7 +79,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          "https://chibataserver-production.up.railway.app//api/categories",
+          "https://chibataserver-production.up.railway.app/api/categories",
           {
             withCredentials: true,
           },
@@ -186,7 +186,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
       });
 
       await toast.promise(
-        axios.put(`https://chibataserver-production.up.railway.app//api/events/${id}`, formData, {
+        axios.put(`https://chibataserver-production.up.railway.app/api/events/${id}`, formData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",

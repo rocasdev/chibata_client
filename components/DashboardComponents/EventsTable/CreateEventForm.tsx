@@ -43,7 +43,7 @@ const CreateEvent = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://chibataserver-production.up.railway.app//api/categories", {
+      const response = await axios.get("https://chibataserver-production.up.railway.app/api/categories", {
         withCredentials: true,
       });
       setCategories(response.data.categories);
@@ -55,7 +55,7 @@ const CreateEvent = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("https://chibataserver-production.up.railway.app//api/users", {
+      const response = await axios.get("https://chibataserver-production.up.railway.app/api/users", {
         withCredentials: true,
       });
       setUsers(response.data.users);
@@ -68,7 +68,7 @@ const CreateEvent = () => {
   const fetchOrganizations = async (userId: string) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app//api/users/${userId}/organizations`,
+        `https://chibataserver-production.up.railway.app/api/users/${userId}/organizations`,
         { withCredentials: true },
       );
       setOrganizations(response.data.organizations);
@@ -188,7 +188,7 @@ const CreateEvent = () => {
       });
 
       await toast.promise(
-        axios.post("https://chibataserver-production.up.railway.app//api/events", formData, {
+        axios.post("https://chibataserver-production.up.railway.app/api/events", formData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",

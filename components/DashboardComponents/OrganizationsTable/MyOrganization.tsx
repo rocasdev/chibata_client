@@ -37,7 +37,7 @@ export default function MyOrganization() {
     const fetchOrganization = async () => {
       try {
         const response = await axios.get(
-          `https://chibataserver-production.up.railway.app//api/organizer/myorg`,
+          `https://chibataserver-production.up.railway.app/api/organizer/myorg`,
           {
             withCredentials: true,
           },

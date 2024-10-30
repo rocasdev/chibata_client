@@ -67,7 +67,7 @@ export default function OrganizationsTable() {
   const fetchOrganizations = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app//api/organizations?page=${page}`,
+        `https://chibataserver-production.up.railway.app/api/organizations?page=${page}`,
         { withCredentials: true },
       );
       const organizations = response.data.organizations;

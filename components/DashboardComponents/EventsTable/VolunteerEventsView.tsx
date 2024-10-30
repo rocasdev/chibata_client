@@ -170,7 +170,7 @@ export default function VolunteerEventsView() {
       let response;
 
       if (selectedCategory === "all") {
-        response = await axios.get("https://chibataserver-production.up.railway.app//api/events", {
+        response = await axios.get("https://chibataserver-production.up.railway.app/api/events", {
           withCredentials: true,
         });
         setEvents(response.data.events || []);
@@ -180,7 +180,7 @@ export default function VolunteerEventsView() {
         );
         if (category) {
           response = await axios.get(
-            `https://chibataserver-production.up.railway.app//api/events/category/${category.category_id}`,
+            `https://chibataserver-production.up.railway.app/api/events/category/${category.category_id}`,
             { withCredentials: true },
           );
           setEvents(response.data.events.events || []);
@@ -196,7 +196,7 @@ export default function VolunteerEventsView() {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await axios.get("https://chibataserver-production.up.railway.app//api/categories", {
+      const response = await axios.get("https://chibataserver-production.up.railway.app/api/categories", {
         withCredentials: true,
       });
       setCategories(response.data.categories || []);
