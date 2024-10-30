@@ -13,7 +13,8 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import Map, { Marker, MapRef } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import debounce from "lodash/debounce";
+import debounce from "lodash.debounce";
+
 
 const MAPBOX_TOKEN =
   "pk.eyJ1Ijoicm9jYXNkZXYiLCJhIjoiY20yNGZpNjMyMGc3aTJrcHZsaHoxdXF0NSJ9.HXBo42kG3TCq171NnIWPhA";
