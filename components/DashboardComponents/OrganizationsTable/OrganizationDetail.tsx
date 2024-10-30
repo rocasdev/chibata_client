@@ -29,7 +29,7 @@ const OrganizationDetails = ({ id }: { id: string }) => {
     const fetchOrganization = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/organizations/${id}`,
+          `https://chibataserver-production.up.railway.app//api/organizations/${id}`,
           {
             withCredentials: true,
           },

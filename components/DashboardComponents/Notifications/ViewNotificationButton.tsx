@@ -27,7 +27,7 @@ export function ViewNotificationButton({
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/dashboard/notifications/${notificationId}`,
+        `https://chibataserver-production.up.railway.app//api/dashboard/notifications/${notificationId}`,
         { withCredentials: true },
       );
       console.log(response.data);

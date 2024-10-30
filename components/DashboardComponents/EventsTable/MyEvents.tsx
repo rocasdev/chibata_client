@@ -22,7 +22,7 @@ export default function EventsCardGrid() {
   const fetchEvents = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/organizer/myevents?page=${page}`,
+        `https://chibataserver-production.up.railway.app//api/organizer/myevents?page=${page}`,
         { withCredentials: true },
       );
       const events = response.data.events;

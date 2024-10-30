@@ -50,7 +50,7 @@ const Topbar = () => {
   const handleLogout = async () => {
     try {
 
-      await axios.post("http://localhost:4000/api/auth/logout", null, {
+      await axios.post("https://chibataserver-production.up.railway.app//api/auth/logout", null, {
         withCredentials: true
       })
 

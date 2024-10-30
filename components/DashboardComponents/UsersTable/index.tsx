@@ -63,7 +63,7 @@ export default function UsersTable() {
   const fetchUsers = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/users?page=${page}&limit=10`,
+        `https://chibataserver-production.up.railway.app//api/users?page=${page}&limit=10`,
         { withCredentials: true },
       );
       const users = response.data.users;

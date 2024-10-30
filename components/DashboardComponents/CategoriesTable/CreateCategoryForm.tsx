@@ -21,7 +21,7 @@ const CreateCategory = () => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       await toast.promise(
-        axios.post("http://localhost:4000/api/categories", values, {
+        axios.post("https://chibataserver-production.up.railway.app//api/categories", values, {
           withCredentials: true,
         }),
         {

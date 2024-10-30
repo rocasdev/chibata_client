@@ -32,7 +32,7 @@ const UserDetails = ({ id }: { id: string }) => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/users/${id}`,
+          `https://chibataserver-production.up.railway.app//api/users/${id}`,
           {
             withCredentials: true,
           },

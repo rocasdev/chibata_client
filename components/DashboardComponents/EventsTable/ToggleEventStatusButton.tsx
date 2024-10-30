@@ -18,7 +18,7 @@ export function ToggleEventStatusButton({
   const toggleEventStatus = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:4000/api/events/${event.event_id}`,
+        `https://chibataserver-production.up.railway.app//api/events/${event.event_id}`,
         {
           status: isActive ? "inactivo" : "activo",
         },

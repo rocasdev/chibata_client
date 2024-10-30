@@ -22,7 +22,7 @@ const DashboardStats = () => {
     const fetchCounts = async () => {
       try {
         const counts = await axios.get(
-          "http://localhost:4000/api/dashboard/counts/",
+          "https://chibataserver-production.up.railway.app//api/dashboard/counts/",
           {
             withCredentials: true
           },

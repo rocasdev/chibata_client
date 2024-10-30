@@ -194,7 +194,7 @@ export default function NotificationsTable() {
   const fetchNotifications = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/notifications/own?page=${page}&limit=10`,
+        `https://chibataserver-production.up.railway.app//api/notifications/own?page=${page}&limit=10`,
         { withCredentials: true },
       );
       const notifications = response.data.notifications;
@@ -213,7 +213,7 @@ export default function NotificationsTable() {
     async (notificationId: number) => {
       try {
         await axios.delete(
-          `http://localhost:4000/api/notifications/${notificationId}`,
+          `https://chibataserver-production.up.railway.app//api/notifications/${notificationId}`,
           { withCredentials: true },
         );
         await fetchNotifications(currentPage);
@@ -229,7 +229,7 @@ export default function NotificationsTable() {
       try {
         // Actualizar en el servidor
         await axios.patch(
-          `http://localhost:4000/api/notifications/${updatedNotification.notification_id}`,
+          `https://chibataserver-production.up.railway.app//api/notifications/${updatedNotification.notification_id}`,
           null,
           { withCredentials: true },
         );

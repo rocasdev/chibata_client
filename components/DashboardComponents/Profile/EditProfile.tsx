@@ -40,7 +40,7 @@ const EditProfile = () => {
 
       await toast.promise(
         axios.put(
-          `http://localhost:4000/api/users/${user?.user_id}`,
+          `https://chibataserver-production.up.railway.app//api/users/${user?.user_id}`,
           formData,
           {
             withCredentials: true,

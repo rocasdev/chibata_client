@@ -60,7 +60,7 @@ export default function CategoriesTable() {
   const fetchCategories = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/categories?page=${page}`,
+        `https://chibataserver-production.up.railway.app//api/categories?page=${page}`,
         { withCredentials: true },
       );
       const categories = response.data.categories;
@@ -172,7 +172,7 @@ export default function CategoriesTable() {
   const handleToggleStatus = async (category: Category) => {
     try {
       await axios.patch(
-        `http://localhost:4000/api/categories/${category.category_id}`,
+        `https://chibataserver-production.up.railway.app//api/categories/${category.category_id}`,
         null,
         { withCredentials: true },
       );

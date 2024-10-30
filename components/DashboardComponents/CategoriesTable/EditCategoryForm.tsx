@@ -27,7 +27,7 @@ const EditCategory = ({ categoryId }) => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/categories/${categoryId}`,
+          `https://chibataserver-production.up.railway.app//api/categories/${categoryId}`,
           {
             withCredentials: true,
           },
@@ -57,7 +57,7 @@ const EditCategory = ({ categoryId }) => {
     try {
       await toast.promise(
         axios.put(
-          `http://localhost:4000/api/categories/${categoryId}`,
+          `https://chibataserver-production.up.railway.app//api/categories/${categoryId}`,
           values,
           {
             withCredentials: true,

@@ -52,7 +52,7 @@ const Signup = () => {
 
       await toast.promise(
         axios.post(
-          "http://localhost:4000/api/auth/register-volunteer",
+          "https://chibataserver-production.up.railway.app//api/auth/register-volunteer",
           formData,
           {
             headers: {
