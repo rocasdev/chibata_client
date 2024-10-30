@@ -1,5 +1,4 @@
 import About from "@/components/About";
-import Events from "@/components/Event";
 import Contact from "@/components/Contact";
 import CTA from "@/components/CTA";
 import FAQ from "@/components/FAQ";
