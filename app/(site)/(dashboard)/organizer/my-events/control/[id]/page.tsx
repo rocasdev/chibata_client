@@ -1,4 +1,4 @@
-import VolunteerEventDetails from "@/components/DashboardComponents/EventsTable/VolunteerEventDetail";
+import OrganizerEventControll from "@/components/DashboardComponents/EventsTable/OrganizerEventControl";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,10 +6,12 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage({ params }) {
+
+  
   const { id } = await params;
   return (
     <div>
-      <VolunteerEventDetails id={id} />
+      <OrganizerEventControll id={id} />
     </div>
   );
 }

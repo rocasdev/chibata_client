@@ -60,11 +60,17 @@ export type Event = {
   category_id: string;
   organizer_id: string;
   organization_id: string;
+  max_volunteers: number;
+  current_volunteers: number;
   User: {
     firstname: string;
     surname: string;
   };
   Organization: {
+    name: string;
+  };
+  Category: {
+    category_id: string;
     name: string;
   };
 };

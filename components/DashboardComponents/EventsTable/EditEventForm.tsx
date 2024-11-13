@@ -47,25 +47,22 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
   const [isSearching, setIsSearching] = useState(false);
   const mapRef = React.useRef<MapRef | null>(null);
   const [categories, setCategories] = useState<any>([]);
-  const [users, setUsers] = useState<any>([]);
-  const [organizations, setOrganizations] = useState<any>([]);
-  const [selectedUser, setSelectedUser] = useState<string>("");
 
   useEffect(() => {
     const fetchEvent = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/events/${id}`, {
+        const response = await axios.get(`${BACKEND_URL}/events/${id}`, {
           withCredentials: true,
         });
         setEvent(response.data.event);
+        console.log(response.data);
         setImagePreview(response.data.event.banner);
         setViewport({
           latitude: response.data.event.latitude,
           longitude: response.data.event.longitude,
           zoom: 11,
         });
-        setSelectedUser(response.data.event.organizer_id);
       } catch (error) {
         console.error("Error al obtener el evento:", error);
         toast.error("Error al cargar la información del evento");
@@ -256,7 +253,8 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
               title: event.title || "",
               description: event.description || "",
               max_volunteers: event.max_volunteers || 0,
-              date_time: event.date_time || "",
+              date_time:
+                new Date(event.date_time).toISOString().replace(/Z/g, "") || "",
               address: event.address || "",
               latitude: event.latitude || 0,
               longitude: event.longitude || 0,
@@ -358,8 +356,8 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
                       name="category_id"
                       className="w-full rounded-lg border border-stroke bg-transparent p-4 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
                     >
-                      <option value="" className="text-black">
-                        Seleccionar categoría...
+                      <option value={event.category_id} className="text-black">
+                        {event.Category.name}
                       </option>
                       {Array.isArray(categories) &&
                         categories.map((category) => (

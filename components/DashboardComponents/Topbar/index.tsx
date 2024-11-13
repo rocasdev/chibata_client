@@ -23,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Sheet,
   SheetContent,
@@ -41,19 +41,44 @@ import {
 } from "../Sidebar/sidebarData";
 import axios from "axios";
 import { BACKEND_URL } from "@/config/constants";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { type Notification } from "../Notifications";
 
 const Topbar = () => {
   const user = useUser();
+
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const userInitials = user ? `${user.firstname[0] + user.surname[0]}` : "NaN";
   const router = useRouter();
   const pathname = usePathname(); // Ruta actual
 
+  const fetchNotifications = useCallback(async (page: number) => {
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/notifications/own?page=${page}&limit=3`,
+        { withCredentials: true },
+      );
+      const notifications = response.data.notifications;
+
+      setNotifications(notifications);
+
+      console.log("Fetched notifications:", notifications, "for page:", page);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  }, []);
+
   const handleLogout = async () => {
     try {
-
       await axios.post(`${BACKEND_URL}/auth/logout`, null, {
-        withCredentials: true
-      })
+        withCredentials: true,
+      });
 
       // Redirigir al usuario a la página de inicio de sesión
       router.push("/auth/signin");
@@ -64,6 +89,27 @@ const Topbar = () => {
       toast.error("Hubo un problema al cerrar sesión");
     }
   };
+
+  const handleToggleRead = useCallback(
+    async (updatedNotification: Notification) => {
+      try {
+        // Actualizar en el servidor
+        await axios.patch(
+          `${BACKEND_URL}/notifications/${updatedNotification.notification_id}`,
+          null,
+          { withCredentials: true },
+        );
+        await fetchNotifications(1);
+      } catch (error) {
+        console.error("Error toggling read status:", error);
+      }
+    },
+    [fetchNotifications],
+  );
+
+  useEffect(() => {
+    fetchNotifications(1);
+  }, [fetchNotifications]);
 
   let menu;
 
@@ -79,7 +125,7 @@ const Topbar = () => {
 
   return (
     <>
-      <header className="m flex h-[60px] w-full items-center justify-between bg-transparent px-4 lg:h-[70px] xl:px-8 shadow-lg">  
+      <header className="m flex h-[60px] w-full items-center justify-between bg-transparent px-4 shadow-lg lg:h-[70px] xl:px-8">
         <div className="block lg:hidden">
           <Sheet>
             <SheetTrigger>
@@ -87,9 +133,7 @@ const Topbar = () => {
             </SheetTrigger>
             <SheetContent side={"left"}>
               <SheetHeader>
-                <SheetTitle className="sr-only">
-                  Are you absolutely sure?
-                </SheetTitle>
+                <SheetTitle className="sr-only">Titulo :b</SheetTitle>
                 <SheetDescription>
                   <Link
                     href={user?.role_path || "/"}
@@ -186,6 +230,55 @@ const Topbar = () => {
         </Breadcrumb>
 
         <div className="flex gap-x-4">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button className="my-auto !border-none !bg-transparent !text-black dark:!text-white">
+                <Bell size={24} fontSize={24} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              {notifications.length > 0 ? (
+                <div className="relative flex flex-col gap-2">
+                  {notifications.map((notification, index) => (
+                    <div
+                      key={index}
+                      className="my-2 flex cursor-pointer justify-center gap-2"
+                      onClick={() => handleToggleRead(notification)}
+                    >
+                      <span
+                        className={`my-auto h-4 w-4 rounded-full bg-green-600 ${notification.is_read ? "hidden" : "block"}`}
+                      ></span>
+                      <div className="flex w-2/3 flex-col gap-2">
+                        <p className="text-sm font-bold">
+                          {notification.title}
+                        </p>
+                        <p className="line-clamp-2 text-sm text-neutral-500 dark:text-neutral-400">
+                          {notification.message}
+                        </p>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-500">
+                          {notification.created_at}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <div
+                    className="my-2 flex cursor-pointer justify-center gap-2"
+                    onClick={() =>
+                      router.push(`${user?.role_path}/notifications`)
+                    }
+                  >
+                    <div className="flex w-2/3 flex-col gap-2 text-center">
+                      <p className="text-sm font-bold">
+                        Ver todas las notificaciones
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <h3>No hay notificaciones que mostrar</h3>
+              )}
+            </PopoverContent>
+          </Popover>
           <ThemeToggler />
           <DropdownMenu>
             <DropdownMenuTrigger>

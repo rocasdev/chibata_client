@@ -55,7 +55,7 @@ type Event = {
   };
 };
 
-const EventDetails = ({ id }: { id: number }) => {
+const VolunteerEventDetails = ({ id }: { id: number }) => {
   const router = useRouter();
 
   const [event, setEvent] = useState<Event | null>(null);
@@ -211,9 +211,40 @@ const EventDetails = ({ id }: { id: number }) => {
           </div>
 
           <div className="flex justify-center">
-            <Button variant={"outline"} onClick={() => router.push(`/organizer/my-events/control/${id}`)}>
-              Gestionar Evento
-            </Button>
+            {isIn ? (
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-neutral-300">
+                Ya estás inscrito en este evento
+              </h3>
+            ) : event.current_volunteers === event.max_volunteers ? (
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-neutral-300">
+                Este evento está lleno
+              </h3>
+            ) : (
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-green-600 hover:bg-green-700">
+                    Registrarse para el evento
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Confirmar registro</DialogTitle>
+                    <DialogDescription>
+                      ¿Estás seguro de que deseas registrarte para este evento?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(false)}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleRegister}>Confirmar registro</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </div>
       </div>
@@ -221,4 +252,4 @@ const EventDetails = ({ id }: { id: number }) => {
   );
 };
 
-export default EventDetails;
+export default VolunteerEventDetails;
