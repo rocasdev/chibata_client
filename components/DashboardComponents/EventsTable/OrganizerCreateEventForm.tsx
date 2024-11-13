@@ -14,6 +14,7 @@ import Link from "next/link";
 import Map, { Marker, MapRef } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import debounce from "lodash.debounce";
+import { BACKEND_URL } from "@/config/constants";
 
 
 const MAPBOX_TOKEN =
@@ -38,13 +39,10 @@ const OrganizerCreateEvent = () => {
   const [isSearching, setIsSearching] = useState(false);
   const mapRef = useRef<MapRef | null>(null);
   const [categories, setCategories] = useState<any>([]);
-  const [users, setUsers] = useState<any>([]);
-  const [organizations, setOrganizations] = useState<any>([]);
-  const [selectedUser, setSelectedUser] = useState<string>("");
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://chibataserver-production.up.railway.app/api/categories", {
+      const response = await axios.get(`${BACKEND_URL}/categories`, {
         withCredentials: true,
       });
       setCategories(response.data.categories);
@@ -58,6 +56,7 @@ const OrganizerCreateEvent = () => {
     fetchCategories();
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const searchPlaces = useCallback(
     debounce(async (query: string, setFieldValue: Function) => {
       if (!query) {
@@ -111,7 +110,8 @@ const OrganizerCreateEvent = () => {
   const validationSchema = Yup.object({
     title: Yup.string().required("El título es requerido"),
     description: Yup.string(),
-    date_time: Yup.date().required("La fecha y hora son requeridas"),
+    max_volunteers: Yup.number().min(1, "Tu evento tiene que tener al meno un cupo disponible").required("La cantidad máxima de voluntarios es requerida"),
+    date_time: Yup.date().min(new Date(), "La fecha debe ser igual o posterior a la fecha actual").required("La fecha y hora son requeridas"),
     address: Yup.string().required("La dirección es requerida"),
     latitude: Yup.number().required("La latitud es requerida").min(-90).max(90),
     longitude: Yup.number()
@@ -152,7 +152,7 @@ const OrganizerCreateEvent = () => {
 
       await toast.promise(
         axios.post(
-          "https://chibataserver-production.up.railway.app/api/organizer/create-event",
+          `${BACKEND_URL}/organizer/create-event`,
           formData,
           {
             withCredentials: true,
@@ -228,6 +228,7 @@ const OrganizerCreateEvent = () => {
             initialValues={{
               title: "",
               description: "",
+              max_volunteers: 0,
               date_time: "",
               address: "",
               latitude: viewport.latitude,
@@ -297,6 +298,25 @@ const OrganizerCreateEvent = () => {
                     />
                     <ErrorMessage
                       name="description"
+                      component="div"
+                      className="text-sm text-red-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Campo de cupos max */}
+                <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5">
+                  <div className="w-full">
+                    <Label htmlFor="max_volunteers">Cupos Máximos</Label>
+                    <Field
+                      as={Input}
+                      id="max_volunteers"
+                      name="max_volunteers"
+                      placeholder="25"
+                      className="w-full rounded-lg border border-stroke bg-transparent p-4 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                    />
+                    <ErrorMessage
+                      name="max_volunteers"
                       component="div"
                       className="text-sm text-red-500"
                     />
@@ -480,9 +500,7 @@ const OrganizerCreateEvent = () => {
                   </Link>
                   <button
                     type="submit"
-                    disabled={
-                      isSubmitting
-                    }
+                    disabled={isSubmitting}
                     className="inline-flex items-center gap-2.5 rounded-full bg-green-800 px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho disabled:opacity-50 dark:bg-green-700 dark:hover:bg-blackho"
                   >
                     {isSubmitting ? "Creando..." : "Crear Evento"}

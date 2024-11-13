@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
@@ -12,6 +13,7 @@ import {
 import { ArrowBigLeft, ArrowBigRight, CheckCircle, ExternalLink, XCircle } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { BACKEND_URL } from "@/config/constants";
 
 type Organization = {
   organization_id: string;
@@ -29,7 +31,7 @@ export default function OrganizationsCardGrid() {
   const fetchOrganizations = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app/api/organizations?page=${page}`,
+        `${BACKEND_URL}/organizations?page=${page}`,
         { withCredentials: true },
       );
       const organizations = response.data.organizations;
@@ -55,12 +57,11 @@ export default function OrganizationsCardGrid() {
   }: {
     organization: Organization;
   }) => (
-    <Card className="flex h-[400px] w-[300px] flex-col overflow-hidden transition-all hover:shadow-lg">
+    <Card className="flex h-[400px] w-[300px] flex-col overflow-hidden transition-all hover:shadow-lg bg-neutral-300 dark:bg-gray-900">
       <CardHeader className="flex-none pb-0">
         <h3 className="truncate text-xl font-semibold">{organization.name}</h3>
         <Badge
-          variant={organization.is_active ? "default" : "destructive"}
-          className="mt-1"
+          className={`${organization.is_active? "!text-green-500" : "!text-red-500"} text-sm text-center font-bold !bg-transparent w-full`}
         >
           {organization.is_active ? (
             <CheckCircle className="mr-1 h-3 w-3" />
@@ -72,6 +73,7 @@ export default function OrganizationsCardGrid() {
       </CardHeader>
       <CardContent className="flex flex-grow items-center justify-center p-6">
         <div className="relative h-48 w-48 overflow-hidden rounded-full border-4 border-primary/10">
+          
           <img
             src={organization.logo}
             alt={`Logo de ${organization.name}`}

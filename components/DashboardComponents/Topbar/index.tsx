@@ -40,6 +40,7 @@ import {
   volunteerSidebarData,
 } from "../Sidebar/sidebarData";
 import axios from "axios";
+import { BACKEND_URL } from "@/config/constants";
 
 const Topbar = () => {
   const user = useUser();
@@ -50,7 +51,7 @@ const Topbar = () => {
   const handleLogout = async () => {
     try {
 
-      await axios.post("https://chibataserver-production.up.railway.app/api/auth/logout", null, {
+      await axios.post(`${BACKEND_URL}/auth/logout`, null, {
         withCredentials: true
       })
 

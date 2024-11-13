@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import Map, { Marker, MapRef } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import debounce from "lodash.debounce";
+import { BACKEND_URL } from "@/config/constants";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1Ijoicm9jYXNkZXYiLCJhIjoiY20yNGZpNjMyMGc3aTJrcHZsaHoxdXF0NSJ9.HXBo42kG3TCq171NnIWPhA";
@@ -54,12 +55,9 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
     const fetchEvent = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(
-          `https://chibataserver-production.up.railway.app/api/events/${id}`,
-          {
-            withCredentials: true,
-          },
-        );
+        const response = await axios.get(`${BACKEND_URL}/api/events/${id}`, {
+          withCredentials: true,
+        });
         setEvent(response.data.event);
         setImagePreview(response.data.event.banner);
         setViewport({
@@ -78,12 +76,9 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          "https://chibataserver-production.up.railway.app/api/categories",
-          {
-            withCredentials: true,
-          },
-        );
+        const response = await axios.get(`${BACKEND_URL}/categories`, {
+          withCredentials: true,
+        });
         setCategories(response.data.categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -156,6 +151,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
       .max(180),
     category_id: Yup.string().required("La categoría es requerida"),
     status: Yup.string().required("El estado es requerido"),
+    max_volunteers: Yup.number().required("El número máximo de voluntarios es requerido"),
   });
 
   const handleMapClick = (event, setFieldValue) => {
@@ -186,7 +182,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
       });
 
       await toast.promise(
-        axios.put(`https://chibataserver-production.up.railway.app/api/events/${id}`, formData, {
+        axios.put(`${BACKEND_URL}/events/${id}`, formData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -259,6 +255,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
             initialValues={{
               title: event.title || "",
               description: event.description || "",
+              max_volunteers: event.max_volunteers || 0,
               date_time: event.date_time || "",
               address: event.address || "",
               latitude: event.latitude || 0,
@@ -327,6 +324,25 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
                     />
                     <ErrorMessage
                       name="description"
+                      component="div"
+                      className="text-sm text-red-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Campo de cupos max */}
+                <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5">
+                  <div className="w-full">
+                    <Label htmlFor="max_volunteers">Cupos Máximos</Label>
+                    <Field
+                      as={Input}
+                      id="max_volunteers"
+                      name="max_volunteers"
+                      placeholder="25"
+                      className="w-full rounded-lg border border-stroke bg-transparent p-4 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                    />
+                    <ErrorMessage
+                      name="max_volunteers"
                       component="div"
                       className="text-sm text-red-500"
                     />
@@ -503,9 +519,7 @@ const EditEventForm: React.FC<EditEventFormProps> = ({ id }) => {
                   </Link>
                   <Button
                     type="submit"
-                    disabled={
-                      isSubmitting
-                    }
+                    disabled={isSubmitting}
                     className="inline-flex items-center gap-2.5 rounded-full bg-green-800 px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho disabled:opacity-50 dark:bg-green-700 dark:hover:bg-blackho"
                   >
                     {isSubmitting ? "Actualizando..." : "Actualizar Evento"}

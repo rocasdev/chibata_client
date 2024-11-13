@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { BACKEND_URL } from "@/config/constants";
 
 const ForgotPassword = () => {
   const router = useRouter();
@@ -24,9 +25,10 @@ const ForgotPassword = () => {
 
   const onSubmit = async (values: { email: string }, { resetForm }: { resetForm: () => void }) => {
     try {
-      await axios.post("https://chibataserver-production.up.railway.app/api/auth/forgot-password", values);
+      await axios.post(`${BACKEND_URL}/auth/forgot-password`, values);
       toast.success("Correo para restablecer contraseña enviado.");
       resetForm();
+      return router.push("/auth/login");
     } catch (error) {
       toast.error("No se pudo enviar el correo. Intenta de nuevo.");
     }

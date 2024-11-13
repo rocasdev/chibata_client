@@ -11,6 +11,7 @@ import { ImageUp } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
+import { BACKEND_URL } from "@/config/constants";
 
 const Signuporg = () => {
   const router = useRouter();
@@ -71,7 +72,7 @@ const Signuporg = () => {
 
       await toast.promise(
         axios.post(
-          "https://chibataserver-production.up.railway.app/api/auth/register-organization",
+          `${BACKEND_URL}/auth/register-organization`,
           formData,
           {
             headers: {

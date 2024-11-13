@@ -40,6 +40,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { BACKEND_URL } from "@/config/constants";
 
 interface Category {
   category_id: string;
@@ -60,7 +61,7 @@ export default function CategoriesTable() {
   const fetchCategories = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app/api/categories?page=${page}`,
+        `${BACKEND_URL}/categories?page=${page}`,
         { withCredentials: true },
       );
       const categories = response.data.categories;
@@ -172,15 +173,15 @@ export default function CategoriesTable() {
   const handleToggleStatus = async (category: Category) => {
     try {
       await axios.patch(
-        `https://chibataserver-production.up.railway.app/api/categories/${category.category_id}`,
+        `${BACKEND_URL}/categories/${category.category_id}`,
         null,
         { withCredentials: true },
       );
       handleCategoryUpdated();
     } catch (error) {
       console.error("Error toggling category status:", error);
-      }
-    };
+    }
+  };
 
   return (
     <div className="container mx-auto py-10">

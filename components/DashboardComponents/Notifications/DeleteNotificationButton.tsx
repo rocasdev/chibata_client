@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { Trash } from "lucide-react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { BACKEND_URL } from "@/config/constants";
 
 export function DeleteNotificationButton({
   notificationId,
@@ -15,7 +22,10 @@ export function DeleteNotificationButton({
 
   const deleteNotification = async () => {
     try {
-      await axios.delete(`https://chibataserver-production.up.railway.app/api/dashboard/notifications/${notificationId}`, {withCredentials: true});
+      await axios.delete(
+        `${BACKEND_URL}/dashboard/notifications/${notificationId}`,
+        { withCredentials: true },
+      );
       console.log("Notification deleted");
       setOpen(false);
       if (onDelete) {
@@ -28,7 +38,10 @@ export function DeleteNotificationButton({
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="text-red-500 hover:text-red-700">
+      <button
+        onClick={() => setOpen(true)}
+        className="text-red-500 hover:text-red-700"
+      >
         <Trash className="h-5 w-5" />
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -38,8 +51,12 @@ export function DeleteNotificationButton({
           </DialogHeader>
           <p>¿Estás seguro que deseas eliminar esta notificación?</p>
           <DialogFooter>
-            <Button variant="destructive" onClick={deleteNotification}>Eliminar</Button>
-            <Button variant="secondary" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button variant="destructive" onClick={deleteNotification}>
+              Eliminar
+            </Button>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              Cancelar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

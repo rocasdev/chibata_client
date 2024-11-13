@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import axios from "axios";
 import Link from "next/link";
+import { BACKEND_URL } from "@/config/constants";
 
 type Category = {
   category_id: number;
@@ -21,7 +21,7 @@ const CategoryDetails = ({ id }) => {
     const fetchCategory = async () => {
       try {
         const response = await axios.get(
-          `https://chibataserver-production.up.railway.app/api/categories/${id}`,
+          `${BACKEND_URL}/categories/${id}`,
           {
             withCredentials: true,
           },

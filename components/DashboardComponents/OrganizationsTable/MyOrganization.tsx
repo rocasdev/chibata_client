@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
+import { BACKEND_URL } from "@/config/constants";
 
 interface Organization {
   id: string;
@@ -36,12 +37,9 @@ export default function MyOrganization() {
   useEffect(() => {
     const fetchOrganization = async () => {
       try {
-        const response = await axios.get(
-          `https://chibataserver-production.up.railway.app/api/organizer/myorg`,
-          {
-            withCredentials: true,
-          },
-        );
+        const response = await axios.get(`${BACKEND_URL}/organizer/myorg`, {
+          withCredentials: true,
+        });
         setOrganization(response.data.organization);
       } catch (err) {
         setError("Error al cargar la organización");
@@ -150,7 +148,7 @@ export default function MyOrganization() {
                   Gestionar Miembros
                 </Button>
               </Link>
-              <Link href={`/organizer/events/${organization.id}`}>
+              <Link href={`/organizer/my-events`}>
                 <Button className="w-full sm:w-auto">
                   <Calendar className="mr-2 h-4 w-4" />
                   Gestionar Eventos

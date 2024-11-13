@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
+import { BACKEND_URL } from "@/config/constants";
 
 interface Organization {
   id: string;
@@ -28,12 +29,9 @@ const OrganizationDetails = ({ id }: { id: string }) => {
   useEffect(() => {
     const fetchOrganization = async () => {
       try {
-        const response = await axios.get(
-          `https://chibataserver-production.up.railway.app/api/organizations/${id}`,
-          {
-            withCredentials: true,
-          },
-        );
+        const response = await axios.get(`${BACKEND_URL}/organizations/${id}`, {
+          withCredentials: true,
+        });
         setOrganization(response.data.organization);
       } catch (err) {
         setError("Error al cargar la organización");

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import { useUser } from "@/app/context/UserContext";
+import { BACKEND_URL } from "@/config/constants";
 
 const EditProfile = () => {
   const user = useUser();
@@ -39,16 +40,12 @@ const EditProfile = () => {
       });
 
       await toast.promise(
-        axios.put(
-          `https://chibataserver-production.up.railway.app/api/users/${user?.user_id}`,
-          formData,
-          {
-            withCredentials: true,
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+        axios.put(`${BACKEND_URL}/users/${user?.user_id}`, formData, {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
           },
-        ),
+        }),
         {
           loading: "Actualizando perfil",
           success: (response) => {

@@ -6,7 +6,8 @@ import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import axios from "axios";
+import { useUser } from "@/hooks/useUsers";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface User {
   user_id: string;
@@ -24,30 +25,8 @@ interface User {
 }
 
 const UserDetails = ({ id }: { id: string }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(
-          `https://chibataserver-production.up.railway.app/api/users/${id}`,
-          {
-            withCredentials: true,
-          },
-        );
-        setUser(response.data.user);
-      } catch (err) {
-        setError("Error al cargar el usuario");
-        console.error("Error fetching user:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [id]);
+  const { user, error, isLoading } = useUser(id);
+  const userInitials = user ? `${user.firstname[0] + user.surname[0]}` : "NaN";
 
   const getDocumentTypeLabel = (docType: string) => {
     const types = {
@@ -58,7 +37,7 @@ const UserDetails = ({ id }: { id: string }) => {
     return types[docType] || docType;
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-xl">Cargando...</div>
@@ -111,12 +90,10 @@ const UserDetails = ({ id }: { id: string }) => {
           <div className="flex flex-col items-center justify-between gap-4 border-b border-stroke pb-8 dark:border-strokedark lg:flex-row">
             <div className="flex items-center gap-4">
               <div className="relative h-24 w-24 overflow-hidden rounded-full lg:h-32 lg:w-32">
-                <Image
-                  src={user.avatar || "/images/placeholder-avatar.jpg"}
-                  alt="Profile photo"
-                  fill
-                  className="object-cover"
-                />
+                  <Avatar className="w-full h-full">
+                    <AvatarFallback>{userInitials}</AvatarFallback>
+                    <AvatarImage src={user?.avatar} />
+                  </Avatar>
               </div>
               <div>
                 <div className="flex items-center gap-3">
@@ -140,7 +117,7 @@ const UserDetails = ({ id }: { id: string }) => {
           </div>
 
           <div className="mt-8 grid gap-8">
-            <Card className="border-stroke bg-transparent dark:border-strokedark mb-4">
+            <Card className="mb-20 border-stroke bg-transparent dark:border-strokedark">
               <CardHeader className="border-b border-stroke pb-4 dark:border-strokedark">
                 <h3 className="text-xl font-semibold text-black dark:text-white">
                   Información Personal

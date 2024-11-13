@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -10,9 +10,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { BACKEND_URL } from "@/config/constants";
 
 const Signin = () => {
-
   const router = useRouter();
 
   const initialValues = {
@@ -27,9 +27,9 @@ const Signin = () => {
 
   const signIn = async (values: { email: string; password: string }) => {
     try {
-      const response = await axios.post(
-        "https://chibataserver-production.up.railway.app/api/auth/login", values, { withCredentials: true }
-      );
+      const response = await axios.post(`${BACKEND_URL}/auth/login`, values, {
+        withCredentials: true,
+      });
 
       console.log(response.data.user.role_path);
 

@@ -14,6 +14,7 @@ import Link from "next/link";
 import Map, { Marker, MapRef } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import debounce from "lodash.debounce";
+import { BACKEND_URL } from "@/config/constants";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1Ijoicm9jYXNkZXYiLCJhIjoiY20yNGZpNjMyMGc3aTJrcHZsaHoxdXF0NSJ9.HXBo42kG3TCq171NnIWPhA";
@@ -43,7 +44,7 @@ const CreateEvent = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://chibataserver-production.up.railway.app/api/categories", {
+      const response = await axios.get(`${BACKEND_URL}/categories`, {
         withCredentials: true,
       });
       setCategories(response.data.categories);
@@ -55,7 +56,7 @@ const CreateEvent = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("https://chibataserver-production.up.railway.app/api/users", {
+      const response = await axios.get(`${BACKEND_URL}/users`, {
         withCredentials: true,
       });
       setUsers(response.data.users);
@@ -68,7 +69,7 @@ const CreateEvent = () => {
   const fetchOrganizations = async (userId: string) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app/api/users/${userId}/organizations`,
+        `${BACKEND_URL}/users/${userId}/organizations`,
         { withCredentials: true },
       );
       setOrganizations(response.data.organizations);
@@ -93,6 +94,7 @@ const CreateEvent = () => {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const searchPlaces = useCallback(
     debounce(async (query: string, setFieldValue: Function) => {
       if (!query) {
@@ -146,13 +148,14 @@ const CreateEvent = () => {
   const validationSchema = Yup.object({
     title: Yup.string().required("El título es requerido"),
     description: Yup.string(),
-    date_time: Yup.date().required("La fecha y hora son requeridas"),
+    date_time: Yup.date().min(new Date(), "La fecha debe ser igual o posterior a la fecha actual").required("La fecha y hora es requerida"),
     address: Yup.string().required("La dirección es requerida"),
     latitude: Yup.number().required("La latitud es requerida").min(-90).max(90),
     longitude: Yup.number()
       .required("La longitud es requerida")
       .min(-180)
       .max(180),
+    max_volunteers: Yup.number().min(1, "Debe haber al menos un cupo disponible en tu evento").required("La cantidad máxima de voluntarios es requerida"),
     category_id: Yup.string().required("La categoría es requerida"),
     organizer_id: Yup.string().required("El organizador es requerido"), // Nuevo campo de validación
     organization_id: Yup.string().required("La organización es requerida"), // Nuevo campo de validación
@@ -188,7 +191,7 @@ const CreateEvent = () => {
       });
 
       await toast.promise(
-        axios.post("https://chibataserver-production.up.railway.app/api/events", formData, {
+        axios.post(`${BACKEND_URL}/events`, formData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",
@@ -265,6 +268,7 @@ const CreateEvent = () => {
               address: "",
               latitude: viewport.latitude,
               longitude: viewport.longitude,
+              max_volunteers: "",
               category_id: "",
               organizer_id: "", // Nuevo campo en el formulario
               organization_id: "", // Nuevo campo en el formulario
@@ -332,6 +336,25 @@ const CreateEvent = () => {
                     />
                     <ErrorMessage
                       name="description"
+                      component="div"
+                      className="text-sm text-red-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Campo de cupos max */}
+                <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5">
+                  <div className="w-full">
+                    <Label htmlFor="max_volunteers">Cupos Máximos</Label>
+                    <Field
+                      as={Input}
+                      id="max_volunteers"
+                      name="max_volunteers"
+                      placeholder="25"
+                      className="w-full rounded-lg border border-stroke bg-transparent p-4 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
+                    />
+                    <ErrorMessage
+                      name="max_volunteers"
                       component="div"
                       className="text-sm text-red-500"
                     />

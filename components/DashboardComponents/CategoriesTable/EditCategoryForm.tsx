@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { BACKEND_URL } from "@/config/constants";
 
 interface CategoryFormValues {
   name: string;
@@ -27,7 +28,7 @@ const EditCategory = ({ categoryId }) => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          `https://chibataserver-production.up.railway.app/api/categories/${categoryId}`,
+          `${BACKEND_URL}/categories/${categoryId}`,
           {
             withCredentials: true,
           },
@@ -209,7 +210,7 @@ const EditCategory = ({ categoryId }) => {
                         />
                       </svg>
                     </button>
-                  </div>  
+                  </div>
                 </Form>
               )}
             </Formik>

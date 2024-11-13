@@ -9,6 +9,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
+import { BACKEND_URL } from "@/config/constants";
 
 const ResetPassword = () => {
   const router = useRouter();
@@ -40,7 +41,7 @@ const ResetPassword = () => {
       try {
         // Validar el token con el backend
         const response = await axios.post(
-          "https://chibataserver-production.up.railway.app/api/auth/verify-token",
+          `${BACKEND_URL}/auth/verify-token`,
           {
             token,
           },
@@ -67,7 +68,7 @@ const ResetPassword = () => {
 
     try {
       await toast.promise(
-        axios.post("https://chibataserver-production.up.railway.app/api/auth/reset-password", {
+        axios.post(`${BACKEND_URL}/auth/reset-password`, {
           token,
           password: values.pass,
         }),

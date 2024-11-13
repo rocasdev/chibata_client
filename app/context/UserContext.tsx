@@ -5,6 +5,7 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { BACKEND_URL } from "@/config/constants";
 
 interface User {
   user_id: string;
@@ -107,7 +108,7 @@ export const useUser = () => {
 const getUserData = async (): Promise<User> => {
   try {
     const res = await axios.get(
-      "https://chibataserver-production.up.railway.app/api/users/me",
+      `${BACKEND_URL}/users/me`,
       {
         withCredentials: true,
       },

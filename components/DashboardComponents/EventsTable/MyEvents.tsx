@@ -13,6 +13,7 @@ import { Calendar, Plus, ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import Link from "next/link";
 import { ToggleEventStatusButton } from "./ToggleEventStatusButton";
 import { Event } from "./index";
+import { BACKEND_URL } from "@/config/constants";
 export default function EventsCardGrid() {
   const [events, setEvents] = useState<Event[]>([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -22,7 +23,7 @@ export default function EventsCardGrid() {
   const fetchEvents = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app/api/organizer/myevents?page=${page}`,
+        `${BACKEND_URL}/organizer/myevents?page=${page}`,
         { withCredentials: true },
       );
       const events = response.data.events;
@@ -48,7 +49,7 @@ export default function EventsCardGrid() {
   );
 
   const EventCard = ({ event }: { event: Event }) => (
-    <Card className="flex h-[300px] flex-col">
+    <Card className="flex h-[300px] flex-col bg-neutral-300 dark:bg-gray-900">
       <CardHeader className="flex-none">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">{event.title}</h3>
@@ -113,7 +114,7 @@ export default function EventsCardGrid() {
 
   const CreateEventCard = () => (
     <Link href="/organizer/my-events/create" className="h-full">
-      <Card className="flex h-[300px] cursor-pointer flex-col items-center justify-center transition-all hover:bg-gray-50">
+      <Card className="flex h-[300px] cursor-pointer flex-col items-center justify-center transition-all bg-neutral-300 dark:bg-gray-900">
         <Plus className="mb-4 h-12 w-12 text-gray-400" />
         <p className="text-lg font-medium text-gray-600">Crear Nuevo Evento</p>
       </Card>

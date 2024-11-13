@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 import { FileText } from "lucide-react";
 import { Notification } from "./index";
+import { BACKEND_URL } from "@/config/constants";
 
 export function ViewNotificationButton({
   notificationId,
@@ -27,7 +28,7 @@ export function ViewNotificationButton({
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app/api/dashboard/notifications/${notificationId}`,
+        `${BACKEND_URL}/dashboard/notifications/${notificationId}`,
         { withCredentials: true },
       );
       console.log(response.data);

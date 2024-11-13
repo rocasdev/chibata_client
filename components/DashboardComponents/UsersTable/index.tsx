@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import {
   ColumnDef,
   SortingState,
@@ -37,50 +36,17 @@ import {
   UserCircle2Icon,
 } from "lucide-react";
 import Link from "next/link";
-
-export type User = {
-  user_id: string;
-  firstname: string;
-  surname: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
-  Role: {
-    name: string;
-    path: string;
-  };
-};
+import { User } from "@/types/user";
+import { useUser, useUsers } from "@/hooks/useUsers";
+import { ToggleUserStatusButton } from "./ToggleUserStatus";
 
 export default function UsersTable() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  let { users, isLoading, error, totalPages, mutate } = useUsers(currentPage);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
-  const fetchUsers = useCallback(async (page: number) => {
-    try {
-      const response = await axios.get(
-        `https://chibataserver-production.up.railway.app/api/users?page=${page}&limit=10`,
-        { withCredentials: true },
-      );
-      const users = response.data.users;
-      const totalPages = response.data.totalPages;
-
-      setUsers(users);
-      setTotalPages(totalPages);
-
-      console.log("Fetched users:", users, "for page:", page);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchUsers(currentPage);
-  }, [currentPage, fetchUsers]);
 
   const columns: ColumnDef<User>[] = [
     {
@@ -107,6 +73,11 @@ export default function UsersTable() {
       header: "Rol",
     },
     {
+      accessorKey: "is_active",
+      header: "Activo",
+      cell: ({ row }) => <div>{row.getValue("is_active")? "Sí" : "No"}</div>,
+    },
+    {
       accessorKey: "created_at",
       header: "Creado en",
       cell: ({ row }) => {
@@ -124,6 +95,10 @@ export default function UsersTable() {
             <Link href={`/admin/users/${user.user_id}`}>
               <UserCircle2Icon className="text-blue-500" />
             </Link>
+            <ToggleUserStatusButton
+              user={user}
+              onToggle={mutate}
+            />
           </div>
         );
       },
@@ -221,7 +196,13 @@ export default function UsersTable() {
           </TableHeader>
 
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {isLoading ? (
+              <TableRow className="text-center text-xl w-full">Cargando...</TableRow>
+            ) : error ? (
+              <TableRow className="text-center text-xl text-red-600 w-full">
+                Error al cargar los usuarios
+              </TableRow>
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}

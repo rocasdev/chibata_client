@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { BACKEND_URL } from "@/config/constants";
 
 const CreateOrganization = () => {
   const router = useRouter();
@@ -42,7 +43,7 @@ const CreateOrganization = () => {
       });
 
       await toast.promise(
-        axios.post("https://chibataserver-production.up.railway.app/api/organizations", formData, {
+        axios.post(`${BACKEND_URL}/organizations`, formData, {
           withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",

@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Users2, Calendar, BookUser, MapPinCheck } from "lucide-react";
+import { BACKEND_URL } from "@/config/constants";
 
 const DashboardStats = () => {
   const [userCount, setUserCount] = useState<number | null>(null);
@@ -22,7 +23,7 @@ const DashboardStats = () => {
     const fetchCounts = async () => {
       try {
         const counts = await axios.get(
-          "https://chibataserver-production.up.railway.app/api/dashboard/counts/",
+          `${BACKEND_URL}/dashboard/counts/`,
           {
             withCredentials: true
           },

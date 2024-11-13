@@ -4,6 +4,7 @@ import axios from "axios";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Notification } from ".";
+import { BACKEND_URL } from "@/config/constants";
 
 export function ToggleReadButton({
   notification,
@@ -19,9 +20,9 @@ export function ToggleReadButton({
     try {
       // Actualiza el estado de la notificación en el servidor
       const response = await axios.patch(
-        `https://chibataserver-production.up.railway.app/api/notifications/${notification.notification_id}`, // Asegúrate de que esta URL sea correcta en tu servidor
+        `${BACKEND_URL}/notifications/${notification.notification_id}`, // Asegúrate de que esta URL sea correcta en tu servidor
         null,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       
       // Obtiene la notificación actualizada

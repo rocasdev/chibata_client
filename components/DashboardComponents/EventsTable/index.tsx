@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import { ToggleEventStatusButton } from "./ToggleEventStatusButton";
 import Link from "next/link";
+import { BACKEND_URL } from "@/config/constants";
 
 export type Event = {
   event_id: number;
@@ -80,7 +81,7 @@ export default function EventsTable() {
   const fetchEvents = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app/api/events?page=${page}`,
+        `${BACKEND_URL}/events?page=${page}`,
         { withCredentials: true },
       );
       const events = response.data.events;

@@ -2,7 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { MapPinIcon, CalendarIcon, UserIcon, BuildingIcon } from "lucide-react";
+import {
+  MapPinIcon,
+  CalendarIcon,
+  UserIcon,
+  BuildingIcon,
+  Users2,
+} from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +24,8 @@ import { toast } from "react-hot-toast";
 import Map, { Marker } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
+import { BACKEND_URL } from "@/config/constants";
+import { useRouter } from "next/navigation";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1Ijoicm9jYXNkZXYiLCJhIjoiY20yNGZpNjMyMGc3aTJrcHZsaHoxdXF0NSJ9.HXBo42kG3TCq171NnIWPhA";
@@ -34,6 +42,8 @@ type Event = {
   banner: string;
   status: "Programado" | "En Progreso" | "Finalizado" | "Cancelado";
   state: boolean;
+  max_volunteers: number;
+  current_volunteers: number;
   created_at: string;
   updated_at: string;
   User: {
@@ -46,7 +56,10 @@ type Event = {
 };
 
 const EventDetails = ({ id }: { id: number }) => {
+  const router = useRouter();
+
   const [event, setEvent] = useState<Event | null>(null);
+  const [isIn, setIsIn] = useState<Boolean | null>(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -54,12 +67,16 @@ const EventDetails = ({ id }: { id: number }) => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(
-          `https://chibataserver-production.up.railway.app/api/events/${id}`,
+        const response = await axios.get(`${BACKEND_URL}/events/${id}`, {
+          withCredentials: true,
+        });
+        const isEnroll = await axios.get(
+          `${BACKEND_URL}/events/is-enroll/${id}`,
           {
             withCredentials: true,
           },
         );
+        setIsIn(isEnroll.data.isIn);
         setEvent(response.data.event);
       } catch (err) {
         setError("Error al cargar el evento");
@@ -86,13 +103,12 @@ const EventDetails = ({ id }: { id: number }) => {
   const handleRegister = async () => {
     try {
       await axios.post(
-        `https://chibataserver-production.up.railway.app/api/events/enroll/${id}`,
+        `${BACKEND_URL}/events/enroll/${id}`,
         {},
         { withCredentials: true },
       );
-      toast.success(
-        "Registro exitoso",
-      );
+      toast.success("Registro exitoso");
+      router.push(`/eventos/${id}`);
       setIsDialogOpen(false);
     } catch (err) {
       console.error("Error registering for event:", err);
@@ -136,7 +152,7 @@ const EventDetails = ({ id }: { id: number }) => {
             {event.description}
           </p>
 
-          <div className="mb-6 grid gap-6 md:grid-cols-2">
+          <div className="mb-6 grid gap-6 md:grid-cols-3">
             <Card>
               <CardHeader>
                 <h3 className="flex items-center text-lg font-semibold">
@@ -156,6 +172,18 @@ const EventDetails = ({ id }: { id: number }) => {
               </CardHeader>
               <CardContent>
                 <p>{event.Organization?.name}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <h3 className="flex items-center text-lg font-semibold">
+                  <Users2 size={20} className="mr-2" /> Cupos
+                </h3>
+              </CardHeader>
+              <CardContent>
+                <p>
+                  {event.current_volunteers} / {event.max_volunteers}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -183,30 +211,40 @@ const EventDetails = ({ id }: { id: number }) => {
           </div>
 
           <div className="flex justify-center">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-green-600 hover:bg-green-700">
-                  Registrarse para el evento
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Confirmar registro</DialogTitle>
-                  <DialogDescription>
-                    ¿Estás seguro de que deseas registrarte para este evento?
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsDialogOpen(false)}
-                  >
-                    Cancelar
+            {isIn ? (
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-neutral-300">
+                Ya estás inscrito en este evento
+              </h3>
+            ) : event.current_volunteers === event.max_volunteers ? (
+              <h3 className="text-lg font-medium text-neutral-800 dark:text-neutral-300">
+                Este evento está lleno
+              </h3>
+            ) : (
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-green-600 hover:bg-green-700">
+                    Registrarse para el evento
                   </Button>
-                  <Button onClick={handleRegister}>Confirmar registro</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Confirmar registro</DialogTitle>
+                    <DialogDescription>
+                      ¿Estás seguro de que deseas registrarte para este evento?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsDialogOpen(false)}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleRegister}>Confirmar registro</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </div>
       </div>

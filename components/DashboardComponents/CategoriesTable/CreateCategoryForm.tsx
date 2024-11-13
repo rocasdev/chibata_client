@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { BACKEND_URL } from "@/config/constants";
 
 const CreateCategory = () => {
   const router = useRouter();
@@ -21,7 +22,7 @@ const CreateCategory = () => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       await toast.promise(
-        axios.post("https://chibataserver-production.up.railway.app/api/categories", values, {
+        axios.post(`${BACKEND_URL}/categories`, values, {
           withCredentials: true,
         }),
         {

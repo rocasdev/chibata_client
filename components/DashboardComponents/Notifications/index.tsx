@@ -51,6 +51,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { FileText, Eye, EyeOff, Trash } from "lucide-react";
+import { BACKEND_URL } from "@/config/constants";
 
 function ViewNotificationButton({
   notification,
@@ -194,7 +195,7 @@ export default function NotificationsTable() {
   const fetchNotifications = useCallback(async (page: number) => {
     try {
       const response = await axios.get(
-        `https://chibataserver-production.up.railway.app/api/notifications/own?page=${page}&limit=10`,
+        `${BACKEND_URL}/notifications/own?page=${page}&limit=10`,
         { withCredentials: true },
       );
       const notifications = response.data.notifications;
@@ -212,10 +213,9 @@ export default function NotificationsTable() {
   const handleDelete = useCallback(
     async (notificationId: number) => {
       try {
-        await axios.delete(
-          `https://chibataserver-production.up.railway.app/api/notifications/${notificationId}`,
-          { withCredentials: true },
-        );
+        await axios.delete(`${BACKEND_URL}/notifications/${notificationId}`, {
+          withCredentials: true,
+        });
         await fetchNotifications(currentPage);
       } catch (error) {
         console.error("Error deleting notification:", error);
@@ -229,7 +229,7 @@ export default function NotificationsTable() {
       try {
         // Actualizar en el servidor
         await axios.patch(
-          `https://chibataserver-production.up.railway.app/api/notifications/${updatedNotification.notification_id}`,
+          `${BACKEND_URL}/notifications/${updatedNotification.notification_id}`,
           null,
           { withCredentials: true },
         );
