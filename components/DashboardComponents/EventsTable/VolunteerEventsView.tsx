@@ -205,6 +205,7 @@ export default function VolunteerEventsView() {
       ? eventDate.getTime() === searchDate.getTime()
       : true;
     const isFutureOrToday = eventDate >= today;
+    const isFinished = event.status != "Finalizado";
 
     console.log(`Filtering event: ${event.title}`);
     console.log(`  Event date: ${eventDate.toISOString()}`);
@@ -220,7 +221,8 @@ export default function VolunteerEventsView() {
       matchesCategory &&
       matchesOrganization &&
       matchesDate &&
-      isFutureOrToday
+      isFutureOrToday &&
+      isFinished
     );
   });
 

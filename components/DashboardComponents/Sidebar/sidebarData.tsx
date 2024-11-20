@@ -4,6 +4,7 @@ import {
   Building,
   Calendar,
   Home,
+  IdCard,
   Tag,
   Users2,
 } from "lucide-react";
@@ -67,6 +68,13 @@ const volunteerSidebarData: Sidebar[] = [
     path: "/volunteer/organizations",
     role: "volunteer",
     icon: BookUser,
+  },
+  {
+    id: 4,
+    name: "Certificados",
+    path: "/volunteer/certificates",
+    role: "volunteer",
+    icon: IdCard,
   },
 ];
 
